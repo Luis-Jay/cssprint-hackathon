@@ -1,0 +1,217 @@
+{
+  "project": "Manila Small Business (MSME) Compliance Pipeline",
+  "target": "Sole Proprietorship / Small Business Opening in City of Manila",
+  "total_stages": 5,
+  "stages": [
+    {
+      "stage_id": 1,
+      "stage_name": "National Business Name Registration",
+      "agency": "Department of Trade and Industry (DTI)",
+      "portal_or_location": "BNRS Portal (bnrs.dti.gov.ph) or DTI Regional/NCRO Office",
+      "prerequisites": [
+        "Valid Government-issued ID",
+        "At least 18 years old",
+        "3 Proposed Business Names"
+      ],
+      "steps": [
+        {
+          "step_no": 1,
+          "title": "Business Name Search & Verification",
+          "description": "Search the DTI BNRS database to ensure proposed business name compliance and availability.",
+          "details": "Must satisfy DTI guidelines: not dominant, not offensive, no illegal words, and not identical to existing trademarks."
+        },
+        {
+          "step_no": 2,
+          "title": "Select Territorial Scope & Pay Fee",
+          "description": "Choose territorial jurisdiction which determines business coverage and fee structure.",
+          "details": "Barangay: ₱200 | City/Municipality (Manila): ₱500 | Regional: ₱1,000 | National: ₱2,000 (plus ₱30 Documentary Stamp Tax)."
+        },
+        {
+          "step_no": 3,
+          "title": "Certificate Issuance",
+          "description": "Receive DTI Certificate of Business Name Registration.",
+          "details": "Valid for 5 years. Download digital certificate or print for physical filing."
+        }
+      ],
+      "key_outputs": [
+        "DTI Certificate of Business Name Registration (BNR)"
+      ],
+      "estimated_time": "1 Day (Online: 15-30 minutes)"
+    },
+    {
+      "stage_id": 2,
+      "stage_name": "Barangay Business Clearance",
+      "agency": "Local Barangay (Specific Manila Barangay where shop is located)",
+      "portal_or_location": "Barangay Hall of specific Manila Barangay / Zone",
+      "prerequisites": [
+        "DTI Business Name Certificate",
+        "Proof of Business Location (Lease Contract or Tax Declaration)",
+        "Valid ID"
+      ],
+      "steps": [
+        {
+          "step_no": 1,
+          "title": "Submit Documents to Barangay Hall",
+          "description": "Present DTI Certificate, Lease Agreement or Land Title/Tax Declaration, and Owner's Valid ID.",
+          "details": "If renting, lease contract must be signed by lessor and lessee. If home-based, authorization from land/property owner."
+        },
+        {
+          "step_no": 2,
+          "title": "Barangay Inspection & Fee Payment",
+          "description": "Pay Barangay Clearance Fee (varies by barangay ordinance, typically ₱300 - ₱1,000).",
+          "details": "Barangay official may inspect physical establishment to confirm location validity."
+        },
+        {
+          "step_no": 3,
+          "title": "Issuance of Barangay Business Clearance",
+          "description": "Claim signed Barangay Clearance and Official Receipt.",
+          "details": "Required prerequisite for Manila Mayor's Permit application."
+        }
+      ],
+      "key_outputs": [
+        "Barangay Business Clearance",
+        "Official Receipt"
+      ],
+      "estimated_time": "1 - 2 Days"
+    },
+    {
+      "stage_id": 3,
+      "stage_name": "Special Local Clearances & Permits",
+      "agency": "City Planning & Development Office (CPDO) / Manila Health Dept (MHD) / BFP Manila",
+      "portal_or_location": "Manila City Hall Annex / Line Bureau Offices",
+      "prerequisites": [
+        "Barangay Clearance",
+        "Floor Plan / Location Sketch",
+        "Employee Medical Tests (if food/service)"
+      ],
+      "steps": [
+        {
+          "step_no": 1,
+          "title": "Locational / Zoning Clearance",
+          "description": "Verify land use compatibility with Manila City Land Use & Zoning Ordinance.",
+          "details": "Issued by CPDO Manila City Hall. Required to ensure business activity is allowed in location zone."
+        },
+        {
+          "step_no": 2,
+          "title": "Sanitary Permit & Health Cards (MHD)",
+          "description": "Mandatory for food establishments, retail, personal care, and public-facing shops.",
+          "details": "Employees must undergo X-ray, Stool/Urine exam to secure Manila Yellow Health Card. Sanitary inspection conducted."
+        },
+        {
+          "step_no": 3,
+          "title": "Fire Safety Inspection Certificate (FSIC) Pre-assessment",
+          "description": "Submit floor plan and inspection request to Bureau of Fire Protection (BFP Manila).",
+          "details": "Requires compliant fire extinguishers (dry chemical / HCFC), emergency signs, and clear exit pathways."
+        }
+      ],
+      "key_outputs": [
+        "Zoning Clearance",
+        "Sanitary Permit / Health Cards",
+        "BFP FSIC Order of Payment / Clearance"
+      ],
+      "estimated_time": "3 - 5 Days"
+    },
+    {
+      "stage_id": 4,
+      "stage_name": "GO! Manila Mayor's Business Permit Application",
+      "agency": "Business Permits and Licensing Service (BPLS) - City of Manila",
+      "portal_or_location": "GO! Manila Online Portal (gomanila.com) / BPLS City Hall",
+      "prerequisites": [
+        "DTI Certificate",
+        "Barangay Business Clearance",
+        "Proof of Address (Lease Contract / Tax Dec)",
+        "Zoning / Sanitary / Fire Clearances",
+        "Valid Government ID"
+      ],
+      "steps": [
+        {
+          "step_no": 1,
+          "title": "Account Creation & E-GOVERNMENT Module Selection",
+          "description": "Register on GO! Manila portal (gomanila.com) and navigate to E-GOVERNMENT > Go! BPLS.",
+          "details": "Select 'New Business Application' and enter basic business entity details."
+        },
+        {
+          "step_no": 2,
+          "title": "Document Upload & Location Pinning",
+          "description": "Fill out capital investment details, line of business, and upload scanned PDF/image requirements.",
+          "details": "Pin exact shop address on integrated map tool. Agree to terms and submit for online assessment."
+        },
+        {
+          "step_no": 3,
+          "title": "Statement of Account (SOA) Generation",
+          "description": "BPLS reviews application and generates Statement of Account (SOA).",
+          "details": "SOA breakdown includes: Local Business Tax, Mayor's Permit Fee, Sanitary Fee, Garbage Fee, Fire Inspection Fee."
+        },
+        {
+          "step_no": 4,
+          "title": "Payment Settlement",
+          "description": "Pay online via GO! Manila (E-wallets, Online Banking, Cards) or Over-the-Counter / Bayad Center.",
+          "details": "Save payment reference and receipt screenshot."
+        },
+        {
+          "step_no": 5,
+          "title": "Download Official Permit & Plate",
+          "description": "Access History tab in GO! Manila to view and download digital Mayor's Business Permit and E-OR.",
+          "details": "Print and display prominently at business site alongside physical business plate."
+        }
+      ],
+      "key_outputs": [
+        "Manila Mayor's Business Permit",
+        "Electronic Official Receipt (E-OR)",
+        "Business Plate / Sticker"
+      ],
+      "estimated_time": "2 - 5 Days"
+    },
+    {
+      "stage_id": 5,
+      "stage_name": "BIR Tax Registration & Authority to Print",
+      "agency": "Bureau of Internal Revenue (BIR) - Revenue District Office (RDO Manila)",
+      "portal_or_location": "Respective Manila RDO (e.g., RDO 29, 30, 31, 32, 33, or 34 depending on district)",
+      "prerequisites": [
+        "Mayor's Business Permit",
+        "DTI Certificate",
+        "Barangay Clearance",
+        "Lease Contract",
+        "BIR Form 1901"
+      ],
+      "steps": [
+        {
+          "step_no": 1,
+          "title": "Submit BIR Form 1901",
+          "description": "Submit Application for Registration for Sole Proprietors to assigned Manila RDO.",
+          "details": "Pay Annual Registration Fee (if applicable under current tax rules) and Documentary Stamp Tax on Lease Contract."
+        },
+        {
+          "step_no": 2,
+          "title": "Register Books of Accounts",
+          "description": "Purchase and present standard accounting books (Journal, Ledger, Cash Receipts, Cash Disbursements).",
+          "details": "RDO stamps books for official compliance."
+        },
+        {
+          "step_no": 3,
+          "title": "Authority to Print (ATP) Receipts / Invoices",
+          "description": "Apply for ATP (BIR Form 1906) or register BIR-accredited E-Invoicing / POS system.",
+          "details": "Print official receipts/sales invoices via BIR-accredited printer."
+        },
+        {
+          "step_no": 4,
+          "title": "Certificate of Registration (COR - Form 2303) & Asking for Receipt Sign",
+          "description": "Receive BIR Form 2303 detailing tax obligations (Percentage Tax / VAT, Income Tax, Withholding Tax).",
+          "details": "Display COR Form 2303 and 'Notice to the Public' (Ask for Receipt) poster at business cashier."
+        }
+      ],
+      "key_outputs": [
+        "BIR Certificate of Registration (Form 2303)",
+        "Authority to Print (ATP)",
+        "Stamped Books of Accounts",
+        "Official Receipts"
+      ],
+      "estimated_time": "3 - 5 Days"
+    }
+  ],
+  "bmbe_bonus_note": {
+    "title": "Optional Cost Saving: BMBE Registration (RA 9178)",
+    "benefit": "Exemption from Income Tax for assets under ₱3,000,000 (excluding land).",
+    "where_to_apply": "DTI Portal / DTI NCRO after securing DTI Certificate and Mayor's Permit."
+  }
+}

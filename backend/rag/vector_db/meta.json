@@ -1,0 +1,6 @@
+{
+  "provider": "local",
+  "dimension": 384,
+  "model": "intfloat/multilingual-e5-small",
+  "vectors": 3898
+}

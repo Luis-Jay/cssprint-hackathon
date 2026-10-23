@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Negosyo Copilot: Philippine-flag palette. Blue carries actions, red marks
+   steps and calls to attention, yellow is the sun and good news. */
+:root {
+  --radius: 0.875rem;
+
+  --background: #ffffff;
+  --surface: #f4f6fb;
+  --panel: #eef3fc;
+  /* Navy ink for headings and body text */
+  --foreground: #0e1e4a;
+  --card: #ffffff;
+  --card-foreground: var(--foreground);
+  --popover: #ffffff;
+  --popover-foreground: var(--foreground);
+
+  /* Flag blue */
+  --primary: #0038a8;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2fa;
+  --secondary-foreground: var(--primary);
+  --muted: #eef2fa;
+  --muted-foreground: #5b6785;
+  --accent: #e8eefa;
+  --accent-foreground: var(--primary);
+
+  /* Flag yellow (sun) */
+  --gold: #fcd116;
+  --gold-foreground: #0e1e4a;
+  --gold-soft: #fff4c2;
+  /* Kept under its old name so existing components pick up the new tint */
+  --sage-soft: #e8eefa;
+
+  /* Flag red */
+  --flag-red: #ce1126;
+  --destructive: #ce1126;
+  --destructive-foreground: #ffffff;
+
+  --border: #dde3ef;
+  --input: #d5dcea;
+  --ring: #0038a8;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-dm-sans), ui-sans-serif, sans-serif;
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-gold-soft: var(--gold-soft);
+  --color-sage-soft: var(--sage-soft);
+  --color-flag-red: var(--flag-red);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --shadow-soft: 0 1px 2px rgb(14 30 74 / 0.04), 0 8px 24px rgb(14 30 74 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(14 30 74 / 0.05), 0 16px 40px rgb(14 30 74 / 0.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
+  }
+}
+
+/* The blue-red-yellow band along the top or bottom edge of a page */
+@utility flag-stripe {
+  height: 6px;
+  background: linear-gradient(
+    to right,
+    var(--primary) 0 46%,
+    var(--flag-red) 46% 92%,
+    var(--gold) 92% 100%
+  );
+}
+
+/* Office map pins and labels (Leaflet markup, so plain CSS) */
+/* Calm the street map so the blue pins stand out, as in the design */
+.nc-tiles {
+  filter: saturate(0.45) brightness(1.04) contrast(0.92);
+}
+.nc-pin {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 52px;
+}
+.nc-pin__head {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 10px rgb(14 30 74 / 0.25);
+  transition: transform 0.15s;
+}
+.nc-pin__head svg {
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+}
+.nc-pin--approx .nc-pin__head {
+  outline: 2px dashed var(--primary);
+  outline-offset: 3px;
+  background: color-mix(in oklab, var(--primary) 82%, white);
+}
+.nc-pin--selected .nc-pin__head {
+  width: 46px;
+  height: 46px;
+  box-shadow: 0 0 0 4px var(--gold), 0 6px 14px rgb(14 30 74 / 0.3);
+}
+.nc-pin--selected .nc-pin__head svg {
+  width: 22px;
+  height: 22px;
+}
+.leaflet-tooltip.nc-label {
+  border: 0;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font: 600 12px/1.6 var(--font-sans);
+  color: var(--foreground);
+  box-shadow: 0 1px 4px rgb(14 30 74 / 0.15);
+}
+.leaflet-tooltip.nc-label::before {
+  display: none;
+}
+.nc-popup .leaflet-popup-content-wrapper {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgb(14 30 74 / 0.15);
+}
+.nc-popup .leaflet-popup-content {
+  margin: 12px 16px;
+  font-family: var(--font-sans);
+}
+.nc-popup p {
+  margin: 0;
+}
+.nc-popup__name {
+  font: 700 16px/1.3 var(--font-display);
+  color: var(--foreground);
+}
+.nc-popup__sub {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.nc-popup__status {
+  margin-top: 6px !important;
+  font-size: 13px;
+  font-weight: 500;
+}
+.nc-popup__status::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: currentColor;
+}
+.nc-popup__status.is-open {
+  color: var(--primary);
+}
+.nc-popup__status.is-closed {
+  color: var(--flag-red);
+}
+.nc-popup__approx {
+  margin-top: 2px !important;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+/* "Download PDF" prints the permit summary on its own page. */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* Sized for screen; scaled so the whole card fits one A4 or Letter page. */
+  #permit-summary {
+    zoom: 0.8;
+  }
+}

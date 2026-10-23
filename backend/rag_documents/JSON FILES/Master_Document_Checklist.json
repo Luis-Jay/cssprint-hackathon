@@ -1,0 +1,237 @@
+{
+  "project": "City of Manila Small Business Document Master Checklist",
+  "target_entity": "Sole Proprietorship / MSME (City of Manila)",
+  "total_documents_tracked": 18,
+  "stages": [
+    {
+      "stage_id": 1,
+      "stage_name": "National Business Name Registration (DTI)",
+      "agency": "Department of Trade and Industry",
+      "documents_to_fill_or_acquire": [
+        {
+          "doc_code": "DTI-BNRS-01",
+          "document_name": "DTI Business Name Registration Application Form",
+          "type": "Form to Fill Up",
+          "where_to_get": "DTI BNRS Portal (bnrs.dti.gov.ph) or DTI NCRO Office",
+          "filing_mode": "Online or Over-the-Counter",
+          "prerequisites": [
+            "1 Primary Government ID",
+            "3 Proposed Business Names"
+          ],
+          "output_received": "DTI Certificate of Business Name Registration (CBNR)",
+          "estimated_fee": "₱200 (Barangay) to ₱2,000 (National) + ₱30 DST"
+        },
+        {
+          "doc_code": "ID-GOV-01",
+          "document_name": "Primary Government-Issued ID of Owner",
+          "type": "Personal Document",
+          "where_to_get": "DFA / LTO / PSA / PhilPost / SSS / GSIS",
+          "filing_mode": "Upload (PDF/JPEG) or Photocopy",
+          "prerequisites": [
+            "PhilID, Passport, Driver's License, or UMID"
+          ],
+          "output_received": "Verified Identity",
+          "estimated_fee": "N/A"
+        }
+      ]
+    },
+    {
+      "stage_id": 2,
+      "stage_name": "Barangay Business Clearance",
+      "agency": "Local Manila Barangay Hall (Specific Zone)",
+      "documents_to_fill_or_acquire": [
+        {
+          "doc_code": "BRGY-FORM-01",
+          "document_name": "Barangay Business Clearance Application Form",
+          "type": "Form to Fill Up",
+          "where_to_get": "Barangay Hall desk of your specific Manila district",
+          "filing_mode": "Physical Filing",
+          "prerequisites": [
+            "DTI CBNR Certificate",
+            "Proof of Location",
+            "Valid ID"
+          ],
+          "output_received": "Barangay Business Clearance & Official Receipt",
+          "estimated_fee": "₱300 - ₱1,000 (varies per barangay ordinance)"
+        },
+        {
+          "doc_code": "LOC-PROP-01",
+          "document_name": "Proof of Business Location Address",
+          "type": "Legal Contract / Title",
+          "where_to_get": "Lessor / Property Owner / Registry of Deeds",
+          "filing_mode": "Photocopy / Scanned Upload",
+          "prerequisites": [
+            "Notarized Lease Contract + Lessor's Tax Receipt (if renting)",
+            "Transfer Certificate of Title / Tax Declaration (if owned)",
+            "Authorization / Consent Letter (if home-based)"
+          ],
+          "output_received": "Proof of Occupancy Rights",
+          "estimated_fee": "Notarization ~ ₱300 - ₱500"
+        }
+      ]
+    },
+    {
+      "stage_id": 3,
+      "stage_name": "Special Local Clearances & Permits",
+      "agency": "Manila City Planning (CPDO) / MHD / Bureau of Fire Protection",
+      "documents_to_fill_or_acquire": [
+        {
+          "doc_code": "MNL-CPDO-01",
+          "document_name": "Locational / Zoning Clearance Application",
+          "type": "Form to Fill Up",
+          "where_to_get": "City Planning and Development Office (CPDO - Manila City Hall Annex)",
+          "filing_mode": "In-Person / Integrated in GO! Manila Portal",
+          "prerequisites": [
+            "Barangay Clearance",
+            "Vicinity Map / Floor Plan"
+          ],
+          "output_received": "Locational / Zoning Certificate",
+          "estimated_fee": "₱500 - ₱1,500"
+        },
+        {
+          "doc_code": "MNL-MHD-01",
+          "document_name": "Sanitary Permit & Health Card Application",
+          "type": "Form to Fill Up",
+          "where_to_get": "Manila Health Department (MHD)",
+          "filing_mode": "In-Person / Online Portal Submission",
+          "prerequisites": [
+            "Employee Medical Results (Chest X-Ray, Stool, Urine)",
+            "1x1 ID Photos for Employee Health Cards (Yellow Cards)"
+          ],
+          "output_received": "Sanitary Permit & Individual Health Cards",
+          "estimated_fee": "₱500 - ₱1,200 + Lab fees"
+        },
+        {
+          "doc_code": "BFP-FSIC-01",
+          "document_name": "Fire Safety Inspection Certificate (FSIC) Application",
+          "type": "Form to Fill Up",
+          "where_to_get": "Bureau of Fire Protection (BFP) Manila Fire District Station",
+          "filing_mode": "In-Person Inspection Assessment",
+          "prerequisites": [
+            "Compliant Fire Extinguisher (Dry Chemical / HCFC)",
+            "Emergency Lighting & Exit Signage",
+            "Floor Plan Sketch"
+          ],
+          "output_received": "FSIC Order of Payment / Safety Clearance Certificate",
+          "estimated_fee": "10% of total regulatory charges assessed"
+        }
+      ]
+    },
+    {
+      "stage_id": 4,
+      "stage_name": "GO! Manila Mayor's Business Permit",
+      "agency": "Business Permits and Licensing Service (BPLS) - City of Manila",
+      "documents_to_fill_or_acquire": [
+        {
+          "doc_code": "GO-BPLS-01",
+          "document_name": "Application for New Mayor's Business Permit",
+          "type": "Online Portal Form",
+          "where_to_get": "GO! Manila Portal (https://gomanila.com)",
+          "filing_mode": "Digital Submission",
+          "prerequisites": [
+            "DTI Certificate",
+            "Barangay Business Clearance",
+            "Proof of Location Address (Lease Contract)",
+            "Zoning / Sanitary / Fire Safety Clearances"
+          ],
+          "output_received": "Statement of Account (SOA)",
+          "estimated_fee": "Free to apply; fees assessed based on initial capital"
+        },
+        {
+          "doc_code": "GO-SOA-01",
+          "document_name": "Unified Statement of Account Payment Receipt",
+          "type": "Payment Confirmation",
+          "where_to_get": "GO! Manila Portal / Bayad Center / Over-the-Counter",
+          "filing_mode": "GCash / Maya / Online Banking / Cashier",
+          "prerequisites": [
+            "Generated SOA Number"
+          ],
+          "output_received": "Electronic Official Receipt (E-OR)",
+          "estimated_fee": "Varies by initial capital (typically ₱2,500 - ₱10,000+)"
+        },
+        {
+          "doc_code": "MNL-PERMIT-01",
+          "document_name": "Mayor's Business Permit & Business Plate",
+          "type": "Final License Output",
+          "where_to_get": "Downloaded via GO! Manila History Tab / BPLS City Hall Counter",
+          "filing_mode": "Digital Download & Physical Display",
+          "prerequisites": [
+            "Settled E-OR"
+          ],
+          "output_received": "Official Mayor's Permit (Must frame and display)",
+          "estimated_fee": "Included in SOA"
+        }
+      ]
+    },
+    {
+      "stage_id": 5,
+      "stage_name": "BIR Tax Registration & Authority to Print",
+      "agency": "Bureau of Internal Revenue (Assigned Manila RDO 29 to 34)",
+      "documents_to_fill_or_acquire": [
+        {
+          "doc_code": "BIR-1901",
+          "document_name": "BIR Form 1901 (Application for Sole Proprietor Registration)",
+          "type": "Form to Fill Up",
+          "where_to_get": "BIR ORUS Portal (orus.bir.gov.ph) or RDO Counter",
+          "filing_mode": "Online ORUS or 2 Manual Copies",
+          "prerequisites": [
+            "DTI Certificate",
+            "Mayor's Business Permit or Barangay Clearance",
+            "Valid Owner ID",
+            "Notarized Lease Contract"
+          ],
+          "output_received": "BIR Form 2303 (Certificate of Registration)",
+          "estimated_fee": "₱30 Loose Documentary Stamp Tax (ARF ₱500 now REPEALED)"
+        },
+        {
+          "doc_code": "BIR-1906",
+          "document_name": "BIR Form 1906 (Application for Authority to Print - ATP)",
+          "type": "Form to Fill Up",
+          "where_to_get": "BIR RDO Counter / BIR Accredited Printing Press",
+          "filing_mode": "In-Person or via Accredited Printer",
+          "prerequisites": [
+            "Sample Invoice/Receipt Layout compliant with EOPT Act"
+          ],
+          "output_received": "Official Authority to Print (ATP) Certificate",
+          "estimated_fee": "Included in printing press service charge"
+        },
+        {
+          "doc_code": "BIR-BPI-01",
+          "document_name": "BIR Printed Invoices (BPI) or Accredited Sales Invoices",
+          "type": "Physical Receipt Books",
+          "where_to_get": "RDO New Business Registrant Counter or Accredited Printer",
+          "filing_mode": "Physical Order",
+          "prerequisites": [
+            "Approved Form 1906 (ATP)"
+          ],
+          "output_received": "Registered Sales Invoices / Official Receipts",
+          "estimated_fee": "₱500 - ₱1,500 depending on volume (minimum 10 booklets)"
+        },
+        {
+          "doc_code": "BIR-BOOKS-01",
+          "document_name": "Standard Accounting Books of Accounts",
+          "type": "Hardbound Journal Books",
+          "where_to_get": "Any Bookstore (National Book Store, etc.)",
+          "filing_mode": "Physical Presentation at RDO for Official Stamping",
+          "prerequisites": [
+            "4 General Books: Cash Receipts Journal, Cash Disbursements Journal, General Journal, General Ledger"
+          ],
+          "output_received": "BIR Stamped Official Books of Accounts",
+          "estimated_fee": "₱200 - ₱400 for physical books"
+        },
+        {
+          "doc_code": "BIR-2303",
+          "document_name": "BIR Certificate of Registration (COR - Form 2303) & Public Poster",
+          "type": "Final Tax Output",
+          "where_to_get": "Assigned Manila RDO / Downloaded from BIR ORUS",
+          "filing_mode": "Physical Framed Display at Business Site",
+          "prerequisites": [
+            "Completed Stage 5 Filing & Stamping"
+          ],
+          "output_received": "Form 2303 + 'Notice to the Public' (Ask for Receipt Sign)",
+          "estimated_fee": "Included in filing"
+        }
+      ]
+    }
+  ]
+}

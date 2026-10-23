@@ -1,0 +1,148 @@
+================================================================================
+        CITY OF MANILA SMALL BUSINESS COMPLIANCE - MASTER DOCUMENT CHECKLIST        
+================================================================================
+
+STAGE 1: National Business Name Registration (DTI)
+Agency: Department of Trade and Industry
+--------------------------------------------------------------------------------
+  [ ] (DTI-BNRS-01) DTI Business Name Registration Application Form
+      • Type         : Form to Fill Up
+      • Source       : DTI BNRS Portal (bnrs.dti.gov.ph) or DTI NCRO Office
+      • Filing Mode  : Online or Over-the-Counter
+      • Prerequisites: 1 Primary Government ID, 3 Proposed Business Names
+      • Deliverable  : DTI Certificate of Business Name Registration (CBNR)
+      • Estimated Fee: ₱200 (Barangay) to ₱2,000 (National) + ₱30 DST
+
+  [ ] (ID-GOV-01) Primary Government-Issued ID of Owner
+      • Type         : Personal Document
+      • Source       : DFA / LTO / PSA / PhilPost / SSS / GSIS
+      • Filing Mode  : Upload (PDF/JPEG) or Photocopy
+      • Prerequisites: PhilID, Passport, Driver's License, or UMID
+      • Deliverable  : Verified Identity
+      • Estimated Fee: N/A
+
+
+
+STAGE 2: Barangay Business Clearance
+Agency: Local Manila Barangay Hall (Specific Zone)
+--------------------------------------------------------------------------------
+  [ ] (BRGY-FORM-01) Barangay Business Clearance Application Form
+      • Type         : Form to Fill Up
+      • Source       : Barangay Hall desk of your specific Manila district
+      • Filing Mode  : Physical Filing
+      • Prerequisites: DTI CBNR Certificate, Proof of Location, Valid ID
+      • Deliverable  : Barangay Business Clearance & Official Receipt
+      • Estimated Fee: ₱300 - ₱1,000 (varies per barangay ordinance)
+
+  [ ] (LOC-PROP-01) Proof of Business Location Address
+      • Type         : Legal Contract / Title
+      • Source       : Lessor / Property Owner / Registry of Deeds
+      • Filing Mode  : Photocopy / Scanned Upload
+      • Prerequisites: Notarized Lease Contract + Lessor's Tax Receipt (if renting), Transfer Certificate of Title / Tax Declaration (if owned), Authorization / Consent Letter (if home-based)
+      • Deliverable  : Proof of Occupancy Rights
+      • Estimated Fee: Notarization ~ ₱300 - ₱500
+
+
+
+STAGE 3: Special Local Clearances & Permits
+Agency: Manila City Planning (CPDO) / MHD / Bureau of Fire Protection
+--------------------------------------------------------------------------------
+  [ ] (MNL-CPDO-01) Locational / Zoning Clearance Application
+      • Type         : Form to Fill Up
+      • Source       : City Planning and Development Office (CPDO - Manila City Hall Annex)
+      • Filing Mode  : In-Person / Integrated in GO! Manila Portal
+      • Prerequisites: Barangay Clearance, Vicinity Map / Floor Plan
+      • Deliverable  : Locational / Zoning Certificate
+      • Estimated Fee: ₱500 - ₱1,500
+
+  [ ] (MNL-MHD-01) Sanitary Permit & Health Card Application
+      • Type         : Form to Fill Up
+      • Source       : Manila Health Department (MHD)
+      • Filing Mode  : In-Person / Online Portal Submission
+      • Prerequisites: Employee Medical Results (Chest X-Ray, Stool, Urine), 1x1 ID Photos for Employee Health Cards (Yellow Cards)
+      • Deliverable  : Sanitary Permit & Individual Health Cards
+      • Estimated Fee: ₱500 - ₱1,200 + Lab fees
+
+  [ ] (BFP-FSIC-01) Fire Safety Inspection Certificate (FSIC) Application
+      • Type         : Form to Fill Up
+      • Source       : Bureau of Fire Protection (BFP) Manila Fire District Station
+      • Filing Mode  : In-Person Inspection Assessment
+      • Prerequisites: Compliant Fire Extinguisher (Dry Chemical / HCFC), Emergency Lighting & Exit Signage, Floor Plan Sketch
+      • Deliverable  : FSIC Order of Payment / Safety Clearance Certificate
+      • Estimated Fee: 10% of total regulatory charges assessed
+
+
+
+STAGE 4: GO! Manila Mayor's Business Permit
+Agency: Business Permits and Licensing Service (BPLS) - City of Manila
+--------------------------------------------------------------------------------
+  [ ] (GO-BPLS-01) Application for New Mayor's Business Permit
+      • Type         : Online Portal Form
+      • Source       : GO! Manila Portal (https://gomanila.com)
+      • Filing Mode  : Digital Submission
+      • Prerequisites: DTI Certificate, Barangay Business Clearance, Proof of Location Address (Lease Contract), Zoning / Sanitary / Fire Safety Clearances
+      • Deliverable  : Statement of Account (SOA)
+      • Estimated Fee: Free to apply; fees assessed based on initial capital
+
+  [ ] (GO-SOA-01) Unified Statement of Account Payment Receipt
+      • Type         : Payment Confirmation
+      • Source       : GO! Manila Portal / Bayad Center / Over-the-Counter
+      • Filing Mode  : GCash / Maya / Online Banking / Cashier
+      • Prerequisites: Generated SOA Number
+      • Deliverable  : Electronic Official Receipt (E-OR)
+      • Estimated Fee: Varies by initial capital (typically ₱2,500 - ₱10,000+)
+
+  [ ] (MNL-PERMIT-01) Mayor's Business Permit & Business Plate
+      • Type         : Final License Output
+      • Source       : Downloaded via GO! Manila History Tab / BPLS City Hall Counter
+      • Filing Mode  : Digital Download & Physical Display
+      • Prerequisites: Settled E-OR
+      • Deliverable  : Official Mayor's Permit (Must frame and display)
+      • Estimated Fee: Included in SOA
+
+
+
+STAGE 5: BIR Tax Registration & Authority to Print
+Agency: Bureau of Internal Revenue (Assigned Manila RDO 29 to 34)
+--------------------------------------------------------------------------------
+  [ ] (BIR-1901) BIR Form 1901 (Application for Sole Proprietor Registration)
+      • Type         : Form to Fill Up
+      • Source       : BIR ORUS Portal (orus.bir.gov.ph) or RDO Counter
+      • Filing Mode  : Online ORUS or 2 Manual Copies
+      • Prerequisites: DTI Certificate, Mayor's Business Permit or Barangay Clearance, Valid Owner ID, Notarized Lease Contract
+      • Deliverable  : BIR Form 2303 (Certificate of Registration)
+      • Estimated Fee: ₱30 Loose Documentary Stamp Tax (ARF ₱500 now REPEALED)
+
+  [ ] (BIR-1906) BIR Form 1906 (Application for Authority to Print - ATP)
+      • Type         : Form to Fill Up
+      • Source       : BIR RDO Counter / BIR Accredited Printing Press
+      • Filing Mode  : In-Person or via Accredited Printer
+      • Prerequisites: Sample Invoice/Receipt Layout compliant with EOPT Act
+      • Deliverable  : Official Authority to Print (ATP) Certificate
+      • Estimated Fee: Included in printing press service charge
+
+  [ ] (BIR-BPI-01) BIR Printed Invoices (BPI) or Accredited Sales Invoices
+      • Type         : Physical Receipt Books
+      • Source       : RDO New Business Registrant Counter or Accredited Printer
+      • Filing Mode  : Physical Order
+      • Prerequisites: Approved Form 1906 (ATP)
+      • Deliverable  : Registered Sales Invoices / Official Receipts
+      • Estimated Fee: ₱500 - ₱1,500 depending on volume (minimum 10 booklets)
+
+  [ ] (BIR-BOOKS-01) Standard Accounting Books of Accounts
+      • Type         : Hardbound Journal Books
+      • Source       : Any Bookstore (National Book Store, etc.)
+      • Filing Mode  : Physical Presentation at RDO for Official Stamping
+      • Prerequisites: 4 General Books: Cash Receipts Journal, Cash Disbursements Journal, General Journal, General Ledger
+      • Deliverable  : BIR Stamped Official Books of Accounts
+      • Estimated Fee: ₱200 - ₱400 for physical books
+
+  [ ] (BIR-2303) BIR Certificate of Registration (COR - Form 2303) & Public Poster
+      • Type         : Final Tax Output
+      • Source       : Assigned Manila RDO / Downloaded from BIR ORUS
+      • Filing Mode  : Physical Framed Display at Business Site
+      • Prerequisites: Completed Stage 5 Filing & Stamping
+      • Deliverable  : Form 2303 + 'Notice to the Public' (Ask for Receipt Sign)
+      • Estimated Fee: Included in filing
+
+

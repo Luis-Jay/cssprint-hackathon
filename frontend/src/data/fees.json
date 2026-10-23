@@ -1,0 +1,17 @@
+{
+  "$comment": "EDIT ME — indicative government fee estimate only. Not an official assessment. `short` is the label on the dashboard fee card; `label` is used in the copilot's fee table.",
+  "totalRange": "₱4,560 – ₱7,060",
+  "basisCapital": 150000,
+  "disclaimer": "Estimate only — not a full or official computation. Actual amounts depend on your barangay, capital, floor area, signage size and the City of Manila assessor's final SOA.",
+  "items": [
+    { "short": "DTI business name", "label": "DTI Business Name — City Scope", "amount": "₱530", "note": "₱500 + ₱30 DST" },
+    { "short": "Barangay clearance", "label": "Barangay Business Clearance", "amount": "~₱500", "note": "Sampaloc Zone 30" },
+    {
+      "short": "Mayor's permit",
+      "label": "Manila Mayor's SOA Assessment",
+      "amount": "₱3,500 – ₱6,000",
+      "note": "Based on ₱150,000 capital"
+    },
+    { "short": "BIR stamp duty", "label": "BIR Stamp Duty", "amount": "₱30", "note": "ARF repealed (EOPT Act)" }
+  ]
+}
