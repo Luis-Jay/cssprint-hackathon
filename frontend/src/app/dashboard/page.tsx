@@ -3,20 +3,20 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, LogOut, MapPin, MessageCircle, PencilLine } from "lucide-react";
-import { FlagStripe, SunMark } from "@/components/brand";
+import { LogOut, MapPin, PencilLine } from "lucide-react";
+import { ASSISTANT_NAME, GabAIAvatar } from "@/components/gabai";
+import { FlagStripe, SellyoIcon } from "@/components/brand";
 import { StageCard } from "@/components/StageTimeline";
 import { ChatPanel } from "@/components/ChatPanel";
 import { PermitSummary } from "@/components/PermitSummary";
 import {
   FEE_BASIS_CAPITAL,
-  FEE_BREAKDOWN,
   FEE_DISCLAIMER,
-  FEE_TOTAL,
   ROADMAP_DISCLAIMER,
   stageShortLabel,
 } from "@/lib/roadmap-data";
 import { formatPeso, useCompliance } from "@/lib/compliance-store";
+import { feeEstimate } from "@/lib/fees";
 import { cn } from "@/lib/utils";
 
 /** BMBE (RA 9178) covers businesses with assets under ₱3M. */
@@ -26,7 +26,7 @@ export default function Page() {
   const router = useRouter();
   const {
     profile, stages, isStageComplete, isStageUnlocked, currentStageIndex, roadmapSource,
-    signedIn, name, signOut, authLoading, sessionId, restartOnboarding,
+    signedIn, name, signOut, authLoading, sessionId, restartOnboarding, inbox, roadmap,
   } = useCompliance();
 
   // A rejected token wipes the workspace; send them back to sign in rather
@@ -40,22 +40,21 @@ export default function Page() {
   const stage = stages.find((s) => s.id === viewing) ?? current;
 
   const [chatOpen, setChatOpen] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [ask, setAsk] = useState<{ id: string; text: string } | null>(null);
+  // Replies (e.g. upload checks) that arrived since GabAI was last closed.
+  const [lastSeen, setLastSeen] = useState(() => Date.now());
+  const unread = inbox.filter((m) => (m.at ?? 0) > lastSeen).length;
+  const closeChat = () => {
+    setChatOpen(false);
+    setLastSeen(Date.now());
+  };
 
   const capital = Number(String(profile.capital).replace(/[^\d.]/g, ""));
+  const fees = feeEstimate(roadmap, stages);
   const bmbe = capital > 0 && capital < BMBE_LIMIT;
   const allDone = stages.every((s) => isStageComplete(s.id));
   // Once everything is done the summary is the home view; the stages stay one click away.
   const [showRoadmap, setShowRoadmap] = useState(false);
 
-  const submitQuestion = (e: React.FormEvent) => {
-    e.preventDefault();
-    const text = question.trim();
-    if (text) setAsk({ id: crypto.randomUUID(), text });
-    setQuestion("");
-    setChatOpen(true);
-  };
 
   if (!stage) return null;
 
@@ -65,9 +64,7 @@ export default function Page() {
       <header className="border-b border-border bg-card print:hidden">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary">
-              <SunMark className="size-7" />
-            </span>
+            <SellyoIcon />
             <div className="min-w-0">
               <p className="truncate font-display text-lg font-bold leading-tight">
                 {profile.businessName || "Your business"}
@@ -186,18 +183,18 @@ export default function Page() {
           <aside className="space-y-6">
             <section className="rounded-[2rem] bg-card p-7 shadow-soft">
               <p className="text-sm text-muted-foreground">Estimated total fees</p>
-              <p className="mt-1 font-display text-3xl font-extrabold text-primary">{FEE_TOTAL}</p>
+              <p className="mt-1 font-display text-3xl font-extrabold text-primary">{fees.total}</p>
               <dl className="mt-5 divide-y divide-border border-t border-border">
-                {FEE_BREAKDOWN.map((f) => (
-                  <div key={f.short} className="flex items-baseline justify-between gap-3 py-3.5">
-                    <dt className="text-sm">{f.short}</dt>
+                {fees.items.map((f, i) => (
+                  <div key={`${f.label}-${i}`} className="flex items-baseline justify-between gap-3 py-3.5">
+                    <dt className="text-sm">{f.label}</dt>
                     <dd className="shrink-0 text-sm font-bold">{f.amount}</dd>
                   </div>
                 ))}
               </dl>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                Estimates based on {formatPeso(String(FEE_BASIS_CAPITAL))} capital.
-                {capital > 0 && capital !== FEE_BASIS_CAPITAL &&
+                {fees.basis}
+                {!roadmap?.length && capital > 0 && capital !== FEE_BASIS_CAPITAL &&
                   ` Yours is ${formatPeso(profile.capital)}, so the mayor's permit fee will differ.`}
               </p>
               <details className="mt-2 text-xs text-muted-foreground">
@@ -206,58 +203,51 @@ export default function Page() {
               </details>
             </section>
 
-            <section className="rounded-[2rem] bg-primary p-7 text-primary-foreground">
-              <h2 className="text-2xl font-extrabold">Ask the copilot</h2>
-              <p className="mt-2 text-primary-foreground/80">
-                Questions about a permit, fee or form? Ask in plain words.
-              </p>
-              <form onSubmit={submitQuestion} className="mt-5 flex gap-2">
-                <input
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="How long does DTI take?"
-                  aria-label="Ask the copilot"
-                  className="h-12 min-w-0 flex-1 rounded-full bg-card px-5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gold"
-                />
-                <button
-                  type="submit"
-                  aria-label="Ask"
-                  className="grid size-12 shrink-0 place-items-center rounded-full bg-gold text-gold-foreground transition-transform hover:scale-105"
-                >
-                  <ArrowRight className="size-5" />
-                </button>
-              </form>
-            </section>
           </aside>
         </div>
       </main>
       )}
 
-      {/* Copilot drawer. Stays mounted so the conversation survives closing it. */}
+      {/* GabAI drawer. Stays mounted so the conversation survives closing it. */}
       <div
         className={cn("fixed inset-0 z-40 bg-foreground/30 transition-opacity print:hidden", chatOpen ? "opacity-100" : "pointer-events-none opacity-0")}
-        onClick={() => setChatOpen(false)}
+        onClick={closeChat}
         aria-hidden="true"
       />
       <aside
-        aria-label="Copilot"
+        aria-label={ASSISTANT_NAME}
         aria-hidden={!chatOpen}
         className={cn(
           "fixed inset-y-0 right-0 z-50 w-full max-w-md shadow-lift transition-transform duration-300 print:hidden",
           chatOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
-        <ChatPanel stageId={stage.id} ask={ask} onHide={() => setChatOpen(false)} />
+        <ChatPanel stageId={stage.id} onHide={closeChat} />
       </aside>
 
       {!chatOpen && (
-        <button
-          type="button"
-          onClick={() => setChatOpen(true)}
-          className="fixed bottom-5 right-5 z-30 flex items-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-lift lg:hidden print:hidden"
-        >
-          <MessageCircle className="size-5" /> Copilot
-        </button>
+        <div className="fixed bottom-6 right-6 z-30 flex items-center gap-3 print:hidden">
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            className="hidden rounded-full bg-card px-5 py-3 text-sm font-semibold shadow-lift transition-transform hover:-translate-y-0.5 sm:block"
+          >
+            Need help with permits? Ask Gab.
+          </button>
+          <button
+            type="button"
+            onClick={() => setChatOpen(true)}
+            aria-label={unread ? `Open ${ASSISTANT_NAME}, ${unread} new` : `Open ${ASSISTANT_NAME}`}
+            className="relative rounded-full shadow-[0_8px_28px_rgb(0_56_168/0.35)] transition-transform hover:scale-105"
+          >
+            <GabAIAvatar className="size-16" />
+            {unread > 0 && (
+              <span className="absolute -right-1 -top-1 grid min-w-7 place-items-center rounded-full border-[3px] border-card bg-flag-red px-1.5 py-0.5 text-sm font-bold leading-none text-white">
+                {unread > 9 ? "9+" : unread}
+              </span>
+            )}
+          </button>
+        </div>
       )}
     </div>
   );

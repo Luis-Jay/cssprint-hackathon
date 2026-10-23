@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Globe } from "lucide-react";
-import { FlagStripe, SunMark } from "@/components/brand";
+import { FlagStripe, SellyoIcon } from "@/components/brand";
 import { OfficeMap } from "@/components/OfficeMap";
 import { SideRail } from "@/components/SideRail";
 import { DISTRICTS, directionsUrl, officesFor, openStatus } from "@/data/offices";
@@ -63,9 +63,7 @@ export default function Page() {
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary">
-              <SunMark className="size-7" />
-            </span>
+            <SellyoIcon />
             <div className="min-w-0">
               <p className="truncate font-display text-lg font-bold leading-tight">
                 {profile.businessName || "Your business"}

@@ -13,12 +13,14 @@ import observability as obs
 
 logger = logging.getLogger(__name__)
 
-AGENT_NAME = "Manila Compliance Copilot"
+AGENT_NAME = "GabAI"
 
 MAX_RAG_CONTEXT_CHARS = 3500
 
-QA_SYSTEM_PROMPT = """You are a Manila LGU business-permit compliance expert helping a
-small business owner through the permitting process.
+QA_SYSTEM_PROMPT = """You are GabAI, Sellyo's assistant: a Manila LGU business-permit
+compliance expert helping a small business owner through the permitting process.
+Don't greet or introduce yourself. Only if the user asks who you are, say you
+are GabAI from Sellyo, a guide that doesn't file anything for them.
 
 Ground every factual claim in the MANILA SOURCES provided. When a source gives a
 specific ordinance number, form number, fee or office, name it.
@@ -27,6 +29,11 @@ Rules:
 - If the sources do not cover something, say so plainly rather than guessing.
 - Never state a fee as final: Manila fees vary by barangay, capital, floor area
   and the assessor's SOA. Say "approximately" and name what it depends on.
+- When THEIR ROADMAP lists a cost for a step, quote that figure so your answer
+  matches what the app shows them. Only give a different number if a source
+  says otherwise, and then say the roadmap figure may be out of date.
+- Say whether a step can be done online or must be done in person when the
+  sources say so.
 - Be concrete and practical. Prefer a short ordered list of what to do next
   over general advice.
 - Keep answers under 180 words unless the user asks for detail.
@@ -79,7 +86,7 @@ def answer_question(question: str, state: AgentState) -> str:
     Never raises - returns a graceful message if retrieval or the model fails,
     so a chat turn always produces something for the user to read.
     """
-    obs.emit("agent", "Compliance Copilot reading the question", agent=AGENT_NAME,
+    obs.emit("agent", "GabAI reading the question", agent=AGENT_NAME,
              question=question)
 
     rag_context = ""

@@ -10,7 +10,7 @@ import type { Stage } from "@/lib/roadmap-data";
 /**
  * Upload one document for a stage and run the inspection agent over it.
  *
- * Shared by the stage card's upload box and the copilot's Re-upload button,
+ * Shared by the stage card's upload box and GabAI's Re-upload button,
  * so both verify the same way and report findings into the chat.
  */
 export function useDocumentUpload(stage: Stage | undefined) {
@@ -72,10 +72,12 @@ export function useDocumentUpload(stage: Stage | undefined) {
         recordUpload(stage.id, file.name);
         rememberFile(stage.id, file);
         completeStage(stage.id);
-        toast.success(`Verified: ${label}`, { description: res.message });
+        toast.success(`Looks right: ${label}`, {
+          description: `Stage ${stage.index} is done. The issuing office has the final say.`,
+        });
       } else if (vr?.unreadable) {
         toast.warning(`Could not read ${label}`, {
-          description: vr.documents?.[0]?.notes ?? "See the copilot for details.",
+          description: vr.documents?.[0]?.notes ?? "See GabAI for details.",
         });
       } else {
         toast.error(`${label} does not satisfy this stage`, {
@@ -111,6 +113,6 @@ export function uploadedFileUrl(stageId: string): string | undefined {
   return fileUrls.get(stageId);
 }
 
-/** File types the inspection agent can read. */
+/** File types the inspection agent checks. Text files are refused: anyone can type a certificate. */
 export const UPLOAD_ACCEPT =
-  ".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,.txt,application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif,text/plain";
+  ".pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,application/pdf,image/jpeg,image/png,image/webp,image/heic,image/heif";

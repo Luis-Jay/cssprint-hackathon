@@ -20,6 +20,8 @@ export type AgentMessage = {
   verification?: VerificationResult[];
   trace?: TraceEvent[];
   traceMs?: number;
+  /** When it arrived (ms), so a closed chat can count unread replies. */
+  at?: number;
 };
 
 export type BusinessProfile = {
@@ -41,18 +43,19 @@ export type BusinessProfile = {
 /** Re-exported for convenience; defined in roadmap-data.ts. */
 export { LGU };
 
+/** A blank form: a pre-filled sample business could be submitted unchanged by mistake. */
 export const DEFAULT_PROFILE: BusinessProfile = {
-  businessName: "Manila Artisanal Cafe",
+  businessName: "",
   entity: "Sole Proprietorship",
-  ownerAge: "26",
+  ownerAge: "",
   ownerName: "",
   district: "Sampaloc, Zone 30",
   physicalStatus: "Leased",
-  capital: "150000",
+  capital: "",
   industry: "Small Café / Food Service",
-  employees: "4",
-  servesFood: true,
-  signage: true,
+  employees: "",
+  servesFood: false,
+  signage: false,
   renovating: false,
   notes: "",
 };
@@ -308,7 +311,7 @@ export function ComplianceProvider({ children }: { children: ReactNode }) {
             : [...s.checked, id],
         })),
       pushAgentMessage: (message) =>
-        setState((s) => ({ ...s, inbox: [...s.inbox, message] })),
+        setState((s) => ({ ...s, inbox: [...s.inbox, { ...message, at: Date.now() }] })),
       markSubStepsChecked: (ids) =>
         setState((s) => {
           const fresh = ids.filter((id) => !s.checked.includes(id));

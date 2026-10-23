@@ -227,7 +227,8 @@ export default function Page() {
     );
   }
 
-  const canContinue = !(step === 0 && underage);
+  // A name and an adult owner are needed before anything else makes sense.
+  const canContinue = !(step === 0 && (underage || !data.businessName.trim() || !data.ownerAge));
 
   return (
     <main className="flex min-h-screen flex-col lg:flex-row">
@@ -261,7 +262,7 @@ export default function Page() {
                   <Choice value={data.entity} options={ENTITIES} onChange={(v) => set("entity", v)} />
                 </Field>
                 <Field label="Your age" hint="(owners must be 18 or older)">
-                  <Input type="number" min={0} value={data.ownerAge}
+                  <Input type="number" min={0} value={data.ownerAge} placeholder="e.g. 26"
                     onChange={(e) => set("ownerAge", e.target.value)} className={cn(FIELD, "w-40")} />
                 </Field>
                 {underage && (
@@ -301,7 +302,7 @@ export default function Page() {
             {step === 2 && (
               <>
                 <Field label="Starting capital (₱)">
-                  <Input type="number" min={0} value={data.capital}
+                  <Input type="number" min={0} value={data.capital} placeholder="e.g. 150000"
                     onChange={(e) => set("capital", e.target.value)} className={FIELD} />
                 </Field>
                 {capital > 0 && capital < BMBE_LIMIT && (
@@ -313,7 +314,7 @@ export default function Page() {
                   <Choice value={data.industry} options={INDUSTRIES} onChange={(v) => set("industry", v)} />
                 </Field>
                 <Field label="Number of employees">
-                  <Input type="number" min={0} value={data.employees}
+                  <Input type="number" min={0} value={data.employees} placeholder="e.g. 4"
                     onChange={(e) => set("employees", e.target.value)} className={cn(FIELD, "w-40")} />
                 </Field>
               </>

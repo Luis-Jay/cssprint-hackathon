@@ -1,5 +1,5 @@
 """
-Negosyo Copilot Backend - FastAPI Application
+Sellyo Backend - FastAPI Application
 Main entry point for the API server
 """
 import asyncio
@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Negosyo Copilot API",
+    title="Sellyo API",
     description="Backend API for Manila business permit compliance assistance",
     version="1.0.0",
     lifespan=lifespan,
@@ -86,7 +86,7 @@ app.include_router(router, prefix="/api")
 async def root():
     """Root endpoint"""
     return {
-        "name": "Negosyo Copilot API",
+        "name": "Sellyo API",
         "version": "1.0.0",
         "status": "operational",
         "docs": "/docs"
@@ -99,7 +99,7 @@ def main():
     port = int(os.getenv("BACKEND_PORT", "8000"))
     reload = os.getenv("BACKEND_RELOAD", "true").lower() == "true"
 
-    print("Starting Negosyo Copilot Backend Server...")
+    print("Starting Sellyo Backend Server...")
     print(f"API Documentation: http://{host}:{port}/docs")
     print(f"Health Check:      http://{host}:{port}/api/health")
     if reload:

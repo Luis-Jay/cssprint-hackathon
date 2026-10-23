@@ -10,6 +10,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agents.state import AgentState
 from agents.json_utils import extract_json
+from agents.document_checks import check_fields, failed
+from agents.stage_documents import stage_outputs
 from agents.government_id_agent import (
     check_government_id,
     is_government_id_requirement,
@@ -63,6 +65,10 @@ lorem ipsum, an unrelated letter - the status is "missing" and the note must say
 what the document actually appears to be.
 
 Do not mark anything "complete" without positive evidence in the text.
+
+In notes, say what the document appears to be ("This appears to be a DTI
+Certificate of Business Name Registration for ..."). Never call a document
+valid, verified, genuine or authentic: you can only see what it looks like.
 
 Return ONLY valid JSON. Temperature is 0, so be deterministic and factual."""
 
@@ -199,8 +205,106 @@ def _docs_block(documents: List[Dict]) -> str:
     return "\n\n".join(blocks)
 
 
+def _unverified(results: List[Dict]) -> List[Dict]:
+    """
+    Keyword matching cannot tell a real clearance from a page that says
+    "barangay clearance", so a fallback match is never reported as complete.
+    """
+    out = []
+    for r in results:
+        if r.get("status") == "complete":
+            r = {**r, "status": "unverified",
+                 "notes": "The automatic check is unavailable, so this couldn't be confirmed. "
+                          "Try uploading again in a minute."}
+        out.append(r)
+    return out
+
+
+def _fallback(checklist: List[str], documents: List[Dict]) -> List[Dict]:
+    return _unverified(simple_document_check([], documents, {"requirements": checklist}))
+
+
+def _norm(name: str) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (name or "").lower()).strip()
+
+
+def _align(results: List[Dict], checklist: List[str]) -> List[Dict]:
+    """
+    Map the model's names back onto the checklist and report anything it
+    skipped. The model sometimes rewords an item ("Mayor's Permit / Business
+    Permit") or drops it, and an unmatched stage document silently failed the
+    stage with no explanation.
+    """
+    by_norm = {_norm(c): c for c in checklist}
+    aligned: Dict[str, Dict] = {}
+    leftovers = []
+    for r in results:
+        target = by_norm.get(_norm(r.get("document_name", "")))
+        if target and target not in aligned:
+            aligned[target] = {**r, "document_name": target}
+        else:
+            leftovers.append(r)
+
+    # Closest remaining item by shared words, for reworded names.
+    for r in leftovers:
+        words = set(_norm(r.get("document_name", "")).split())
+        open_items = [c for c in checklist if c not in aligned]
+        best = max(open_items, key=lambda c: len(words & set(_norm(c).split())), default=None)
+        if best and len(words & set(_norm(best).split())) >= 2:
+            aligned[best] = {**r, "document_name": best}
+
+    return [aligned.get(c) or {
+        "document_name": c, "status": "missing",
+        "notes": "The check didn't report on this document. Try uploading again.",
+    } for c in checklist]
+
+
+def _tag(results: List[Dict], outputs: List[str]) -> List[Dict]:
+    """Mark which results are the stage's own document and which are inputs."""
+    return [{**r, "kind": "output" if r.get("document_name") in outputs else "requirement"}
+            for r in results]
+
+
+def _apply_field_checks(results: List[Dict], fields: Dict, profile: Dict) -> List[Dict]:
+    """Run the deterministic checks on any stage document the model accepted."""
+    checked = []
+    for r in results:
+        if r.get("kind") == "output" and r.get("status") == "complete":
+            checks = check_fields(fields, profile)
+            problems = failed(checks)
+            r = {**r, "checks": checks}
+            if problems:
+                r["status"] = "incomplete"
+                r["notes"] = problems[0]["detail"]
+        checked.append(r)
+    return checked
+
+
+def _record_evidence(state: AgentState, step: Optional[Dict], outputs: List[str],
+                     results: List[Dict], document: Dict) -> bool:
+    """
+    Remember what this stage has been shown, across uploads, and say whether
+    every stage document has now been seen. One upload no longer has to
+    satisfy everything at once - an ID and a lease are two files.
+    """
+    if not step:
+        return verdict_is_pass(results)
+    key = str(step.get("step_number"))
+    evidence = dict(state.get("stage_evidence") or {})
+    seen = dict(evidence.get(key) or {})
+    for r in results:
+        if r.get("status") == "complete":
+            seen[r["document_name"]] = {
+                "file": document.get("filename") or document.get("name"),
+                "kind": r.get("kind", "requirement"),
+            }
+    evidence[key] = seen
+    state["stage_evidence"] = evidence
+    return bool(outputs) and all(o in seen for o in outputs)
+
+
 def inspection_agent(state: AgentState) -> AgentState:
-    """Verify documents against roadmap requirements"""
+    """Check one upload against its stage's document and requirements"""
     logger.info("Inspection Readiness Agent running")
 
     roadmap = state.get("roadmap", [])
@@ -229,73 +333,94 @@ def inspection_agent(state: AgentState) -> AgentState:
 
     step = _target_step(state)
     scope = [step] if step else roadmap
-    required_docs = [r for s in scope for r in s.get("requirements", [])]
+    outputs = stage_outputs(step) if step else []
+    requirements = [r for s in scope for r in s.get("requirements", []) if r not in outputs]
+    checklist = outputs + requirements
+    profile = state.get("user_profile") or {}
 
-    obs.emit("agent", f"Verifying {len(documents)} upload(s) against "
-                      f"{len(required_docs)} requirement(s)",
+    obs.emit("agent", f"Checking {len(documents)} upload(s) for "
+                      f"{len(outputs)} stage document(s) and {len(requirements)} requirement(s)",
              agent=AGENT_NAME,
              step=step.get("title") if step else "entire roadmap",
+             outputs=outputs,
              readable=[d.get("name") for d in documents if d.get("text")],
              unreadable=[d.get("name") for d in documents if not d.get("text")])
+
+    def finish(results: List[Dict]) -> AgentState:
+        results = _tag(results, outputs)
+        passed = _record_evidence(state, step, outputs, results, documents[0])
+        state["verification"] = results
+        state["stage_passed"] = passed
+        state["assistant_reply"] = _summarise(results, step, passed, outputs)
+        state["responding_agent"] = AGENT_NAME
+        return state
 
     attachments = [d["attachment"] for d in documents if d.get("attachment")]
 
     # Only give up when there is neither text NOR a file the model can look at.
     if not any(d.get("text") for d in documents) and not attachments:
-        results = simple_document_check(roadmap, documents, step)
-        state["verification"] = results
-        state["assistant_reply"] = _summarise(results, step)
-        state["responding_agent"] = AGENT_NAME
         obs.emit("fallback", "No extractable text - cannot confirm anything",
                  agent=AGENT_NAME, status="warn")
-        return state
+        return finish(_fallback(checklist, documents))
 
-    # Local OCR is sufficient for deterministic requirement matching. Avoid
-    # a doomed network request (and keep document images local) when Gemini
-    # has not been configured.
+    # Without the model only keyword matching is possible, which proves
+    # nothing; report it as unconfirmed rather than passing the stage.
     if not llm_is_configured():
-        results = simple_document_check(roadmap, documents, step)
-        state["verification"] = results
-        state["assistant_reply"] = _summarise(results, step)
-        state["responding_agent"] = AGENT_NAME
-        obs.emit("fallback", "Local OCR/content matcher used; Gemini not configured",
-                 agent=AGENT_NAME, status="ok")
-        return state
+        obs.emit("fallback", "Gemini not configured - keyword match only, nothing confirmed",
+                 agent=AGENT_NAME, status="warn")
+        return finish(_fallback(checklist, documents))
 
     client = get_llm_client()
 
     # Government ID requirements get their own stricter check.
-    id_reqs = [r for r in required_docs if is_government_id_requirement(r)]
-    other_reqs = [r for r in required_docs if not is_government_id_requirement(r)]
+    id_reqs = [r for r in requirements if is_government_id_requirement(r)]
+    others = [r for r in checklist if not is_government_id_requirement(r)]
     id_results = _check_government_ids(id_reqs, documents, client, roadmap, step)
 
-    if not other_reqs:
-        state["verification"] = id_results
-        state["assistant_reply"] = _summarise(id_results, step)
-        state["responding_agent"] = AGENT_NAME
-        return state
+    if not others:
+        return finish(id_results)
+
+    stage_label = (f"STAGE {step.get('step_number')}: {step.get('title')}" if step
+                   else "THIS ROADMAP")
+    output_lines = "\n".join(f"- {d}" for d in outputs) or "- (none)"
+    requirement_lines = "\n".join(
+        f"- {d}" for d in others if d not in outputs) or "- (none)"
 
     try:
-        prompt = f"""Verify this upload against the checklist below.
+        prompt = f"""Check this upload for {stage_label}.
 
-UPLOADED DOCUMENT(S):
+UPLOADED DOCUMENT:
 {_docs_block(documents)}
 
-REQUIRED FOR {"STAGE " + str(step.get("step_number")) + ": " + step.get("title") if step else "THIS ROADMAP"}:
-{chr(10).join(f"- {d}" for d in other_reqs[:20])}
+STAGE DOCUMENT - what the office issues when this stage is done:
+{output_lines}
 
-For each required document decide whether the extracted text above IS that
-document. Judge on the text, not the filename.
+REQUIREMENTS - what the owner brings to apply:
+{requirement_lines}
 
-Return ONLY valid JSON array:
-[
-  {{
-    "document_name": "DTI Certificate",
-    "status": "complete",
-    "notes": "Extracted text shows a DTI Business Name certificate, cert no. 12345",
-    "evidence": "short quote from the extracted text"
-  }}
-]"""
+First read the document itself. Then decide, for every item in both lists,
+whether THIS upload IS that document. Judge on content, not the filename.
+
+Return ONLY a JSON object:
+{{
+  "document": {{
+    "type": "what the document actually is, e.g. DTI Certificate of Business Name Registration",
+    "business_name": "business name printed on it, or null",
+    "owner_name": "owner or registrant name, or null",
+    "document_number": "certificate / permit / reference number, or null",
+    "issue_date": "YYYY-MM-DD or null",
+    "expiry_date": "YYYY-MM-DD or null",
+    "issuing_office": "issuing agency or office, or null"
+  }},
+  "results": [
+    {{
+      "document_name": "exactly as written in the lists above",
+      "status": "complete | incomplete | missing | unreadable",
+      "notes": "one short sentence on what the upload is",
+      "evidence": "short quote from the document"
+    }}
+  ]
+}}"""
 
         # Send the file itself. For a photographed ID or a scanned clearance
         # this IS the evidence - there is no text to match against.
@@ -303,32 +428,28 @@ Return ONLY valid JSON array:
                                        system_prompt=INSPECTION_SYSTEM_PROMPT,
                                        attachments=attachments or None,
                                        max_tokens=2048)
-        verification_results = extract_json(response.get("content", ""))
+        parsed = extract_json(response.get("content", ""))
+        if isinstance(parsed, list):  # older answer shape: results only
+            parsed = {"document": {}, "results": parsed}
+        results = parsed.get("results") if isinstance(parsed, dict) else None
+        if not isinstance(results, list) or not results:
+            raise ValueError("verification had no results")
 
-        if not isinstance(verification_results, list) or not verification_results:
-            raise ValueError("verification was not a non-empty array")
-
-        verification_results = id_results + [
-            r for r in verification_results
-            if not is_government_id_requirement(r.get("document_name", ""))
-        ]
-        state["verification"] = verification_results
-        state["assistant_reply"] = _summarise(verification_results, step)
-        state["responding_agent"] = AGENT_NAME
+        fields = parsed.get("document") or {}
+        obs.emit("agent", f"Document read as: {fields.get('type') or 'unknown'}",
+                 agent=AGENT_NAME, fields=fields)
+        results = _align(results, others)
+        results = _apply_field_checks(_tag(results, outputs), fields, profile)
+        return finish(id_results + results)
 
     except Exception as e:
-        logger.warning("Model verification unavailable (%s); using content matcher", e)
-        obs.emit("fallback", "Model verification unavailable - content matcher used",
+        logger.warning("Model verification unavailable (%s); nothing confirmed", e)
+        obs.emit("fallback", "Model verification unavailable - keyword match only, nothing confirmed",
                  agent=AGENT_NAME, status="warn", error=f"{type(e).__name__}: {e}")
-        results = id_results + [
-            r for r in simple_document_check(roadmap, documents, step)
+        return finish(id_results + [
+            r for r in _fallback(others, documents)
             if not is_government_id_requirement(r["document_name"])
-        ]
-        state["verification"] = results
-        state["assistant_reply"] = _summarise(results, step)
-        state["responding_agent"] = AGENT_NAME
-
-    return state
+        ])
 
 
 def _check_government_ids(
@@ -347,8 +468,8 @@ def _check_government_ids(
     if not checks:
         obs.emit("fallback", "Government ID check unavailable - content matcher used",
                  agent=AGENT_NAME, status="warn")
-        return [r for r in simple_document_check(roadmap, documents, step)
-                if r["document_name"] in requirements]
+        return _unverified([r for r in simple_document_check(roadmap, documents, step)
+                            if r["document_name"] in requirements])
 
     best = next((c for c in checks if c["satisfies_requirement"]), checks[0])
     obs.emit("agent", f"Government ID verdict: {best['verdict']}",
@@ -369,27 +490,35 @@ def verdict_is_pass(results: List[Dict]) -> bool:
     return all(r.get("status") == "complete" for r in results)
 
 
-def _summarise(results: List[Dict], step: Optional[Dict] = None) -> str:
-    """Turn verification into something worth reading in the chat."""
+def _summarise(results: List[Dict], step: Optional[Dict] = None,
+               passed: bool = False, outputs: Optional[List[str]] = None) -> str:
+    """Turn the check into something worth reading in the chat."""
+    outputs = outputs or []
     total = len(results)
-    complete = sum(1 for r in results if r.get("status") == "complete")
-    unreadable = [r for r in results if r.get("status") == "unreadable"]
-    outstanding = [r for r in results
-                   if r.get("status") in ("missing", "incomplete", "unreadable")]
-
     where = f" for **{step['title']}**" if step else ""
+    unreadable = [r for r in results if r.get("status") == "unreadable"]
+    unverified = [r for r in results if r.get("status") == "unverified"]
+    outstanding = [r for r in results if r.get("status") != "complete"]
 
-    if unreadable and len(unreadable) == total:
+    if total and len(unreadable) == total:
         return (f"I could not read that file, so I cannot confirm anything{where}. "
                 f"{unreadable[0].get('notes', '')}")
 
-    if complete == total:
-        return f"All {total} requirement{'s' if total != 1 else ''}{where} are satisfied - you're inspection ready."
+    if unverified and not any(r.get("status") == "complete" for r in results):
+        return ("I couldn't run the full document check just now, so nothing was "
+                "confirmed. Try uploading again in a minute.")
 
-    lines = [f"I checked your upload against {total} requirement"
-             f"{'s' if total != 1 else ''}{where}: **{complete} satisfied**, "
-             f"{len(outstanding)} still outstanding."]
-    for r in outstanding[:4]:
-        note = r.get("notes", "")
-        lines.append(f"- **{r.get('document_name')}** - {note}")
+    if passed:
+        return (f"This looks like your **{' and '.join(outputs)}**. Stage "
+                f"{step.get('step_number')} is done. Sellyo checks that a document looks "
+                f"right; the issuing office has the final say.")
+
+    if step and outputs:
+        lines = [f"This doesn't look like the **{' and '.join(outputs)}** yet{where}."]
+    else:
+        complete = total - len(outstanding)
+        lines = [f"I checked your upload against {total} item{'s' if total != 1 else ''}"
+                 f"{where}: **{complete} matched**, {len(outstanding)} not yet."]
+    for r in sorted(outstanding, key=lambda r: r.get("kind") != "output")[:4]:
+        lines.append(f"- **{r.get('document_name')}** - {r.get('notes', '')}")
     return "\n\n".join([lines[0], "\n".join(lines[1:])]) if len(lines) > 1 else lines[0]

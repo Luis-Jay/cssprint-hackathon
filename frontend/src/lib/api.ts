@@ -1,6 +1,6 @@
 /** PermitPal backend client */
 import type { BusinessProfile } from "./compliance-store";
-import { LGU, type Stage } from "./roadmap-data";
+import { LGU, type Filing, type Stage } from "./roadmap-data";
 
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:8000";
@@ -20,6 +20,9 @@ export type RoadmapStep = {
   estimated_cost?: string;
   location?: string;
   notes?: string;
+  /** Added by the backend: the document that completes the step, and how it's filed. */
+  outputs?: string[];
+  filing?: Filing;
 };
 
 export type RoadmapResponse = {
@@ -207,7 +210,10 @@ export function roadmapToStages(roadmap: RoadmapStep[]): Stage[] {
         label: req,
         detail: "",
       })),
-      uploadLabel: `${step.title.replace(/[^\w]+/g, "_")}.pdf`,
+      uploadLabel: step.outputs?.join(" and ") ?? step.title,
+      outputs: step.outputs,
+      filing: step.filing,
+      agencyUrl: step.filing?.links[0]?.url.replace(/^https?:\/\//, ""),
       chips: [
         `What exactly do I need for ${step.title}?`,
         step.estimated_cost ? `Why does this cost ${step.estimated_cost}?` : "How long does this take?",
@@ -232,10 +238,15 @@ export type ChatResponse = {
 
 export type VerificationResult = {
   document_name: string;
-  status: "complete" | "missing" | "incomplete" | "unreadable";
+  /** "unverified": only a keyword match was possible, so nothing was confirmed. */
+  status: "complete" | "missing" | "incomplete" | "unreadable" | "unverified";
   notes?: string;
   evidence?: string;
   confidence?: number;
+  /** "output" is the stage's own document; "requirement" is something brought to apply. */
+  kind?: "output" | "requirement";
+  /** Deterministic checks on the fields read off the document. ok is null when unreadable. */
+  checks?: { label: string; ok: boolean | null; detail: string }[];
 };
 
 export type UploadResponse = {

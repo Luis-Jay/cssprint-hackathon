@@ -10,7 +10,7 @@ from agents.json_utils import extract_json
 
 logger = logging.getLogger(__name__)
 
-GOVERNMENT_ID_SYSTEM_PROMPT = """You are Negosyo Copilot's Philippine Government ID checking agent.
+GOVERNMENT_ID_SYSTEM_PROMPT = """You are Sellyo's Philippine Government ID checking agent.
 
 Review only the currently uploaded image or PDF. Use the document's visible content and OCR text, never its filename or previous uploads.
 

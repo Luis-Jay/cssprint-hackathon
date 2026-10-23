@@ -7,7 +7,7 @@ import { sendChat, subscribeTrace, type TraceEvent, type VerificationResult } fr
 import { UPLOAD_ACCEPT, useDocumentUpload } from "@/lib/use-document-upload";
 import { AgentTrace } from "@/components/AgentTrace";
 import { MarkdownMessage } from "@/components/MarkdownMessage";
-import { SunMark } from "@/components/brand";
+import { ASSISTANT_NAME, GabAIAvatar } from "@/components/gabai";
 import { cn } from "@/lib/utils";
 
 type Msg = {
@@ -54,6 +54,7 @@ const STATUS_ICON: Record<VerificationResult["status"], { icon: typeof Check; ti
   incomplete: { icon: AlertTriangle, tint: "bg-gold-soft text-amber-700" },
   unreadable: { icon: AlertTriangle, tint: "bg-gold-soft text-amber-700" },
   missing: { icon: AlertTriangle, tint: "bg-red-100 text-flag-red" },
+  unverified: { icon: AlertTriangle, tint: "bg-gold-soft text-amber-700" },
 };
 
 function UploadCheck({ title, results, onReupload, busy }: {
@@ -81,7 +82,7 @@ function UploadCheck({ title, results, onReupload, busy }: {
         </div>
       </div>
       <ul className="divide-y divide-border border-t border-border">
-        {results.map((r) => {
+        {[...results].sort((a, b) => Number(b.kind === "output") - Number(a.kind === "output")).map((r) => {
           const { icon: Icon, tint } = STATUS_ICON[r.status] ?? STATUS_ICON.missing;
           return (
             <li key={r.document_name} className="flex items-start gap-3 px-5 py-4">
@@ -91,10 +92,30 @@ function UploadCheck({ title, results, onReupload, busy }: {
                   : <Icon className="size-3.5" strokeWidth={3} />}
               </span>
               <div className="min-w-0 flex-1">
+                {r.kind === "output" && (
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">
+                    Stage document
+                  </p>
+                )}
                 <p className="font-semibold leading-snug">{r.document_name}</p>
                 {r.notes && <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">{r.notes}</p>}
+                {r.checks && r.checks.length > 0 && (
+                  <ul className="mt-2 space-y-1">
+                    {r.checks.map((c) => (
+                      <li key={c.label} className="flex items-start gap-1.5 text-xs">
+                        <span className={cn(
+                          "font-bold",
+                          c.ok === true ? "text-emerald-700" : c.ok === false ? "text-flag-red" : "text-muted-foreground",
+                        )}>
+                          {c.ok === true ? "✓" : c.ok === false ? "✗" : "?"}
+                        </span>
+                        <span><span className="font-semibold">{c.label}:</span> {c.detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-              {r.status !== "complete" && onReupload && (
+              {r.status !== "complete" && r.kind !== "requirement" && onReupload && (
                 <button
                   type="button"
                   onClick={onReupload}
@@ -115,8 +136,8 @@ function UploadCheck({ title, results, onReupload, busy }: {
 const WELCOME: Msg = {
   id: "welcome",
   role: "agent",
-  agent: "DTI Compliance Bot",
-  text: "I've digested the City of Manila zoning ordinance, DTI BNRS rules, BPLS Manila fee schedule and BIR EOPT circulars for your café. Ask me anything, or tap a suggestion below.",
+  agent: "GabAI",
+  text: "Hi, I'm GabAI. I answer from Manila's ordinances, the DTI, BPLS and BIR rules, and your roadmap. Ask me anything in English or Filipino, or tap a suggestion below. I'm a guide: I don't file anything for you, and the issuing office has the final say.",
 };
 
 
@@ -128,7 +149,7 @@ function respond(q: string, stageId: string, stages: Stage[]): Msg {
       id,
       role: "agent",
       agent: "BIR Tax Advisor",
-      text: "Here is the consolidated government fee estimate for a ₱150,000-capital café in Sampaloc, Manila. Amounts exclude notarial and health-exam costs.",
+      text: "Here is the indicative government fee estimate. It assumes ₱150,000 capital, so yours may differ, and it excludes notarial and health-exam costs.",
       fees: true,
     };
   }
@@ -137,7 +158,7 @@ function respond(q: string, stageId: string, stages: Stage[]): Msg {
       id,
       role: "agent",
       agent: "Manila Zoning Agent",
-      text: "Each food handler needs a Manila Health Department Yellow Card before the Sanitary Permit is released. Route your 4 staff through this sequence:",
+      text: "Each food handler needs a Manila Health Department Yellow Card before the Sanitary Permit is released. Each food handler goes through this sequence:",
       checklist: [
         "Barangay-issued medical referral or company letter",
         "Chest X-Ray at Manila Health Department (Sta. Cruz)",
@@ -167,7 +188,7 @@ function respond(q: string, stageId: string, stages: Stage[]): Msg {
       id,
       role: "agent",
       agent: "DTI Compliance Bot",
-      text: "BNRS will reject a café name that is generic, deceptive, or confusingly similar to a registered mark. Keep it to: [Root Word] + [Descriptor].",
+      text: "BNRS will reject a business name that is generic, deceptive, or confusingly similar to a registered mark. Keep it to: [Root Word] + [Descriptor].",
       checklist: [
         'Avoid protected words: "Philippines", "National", "Bureau"',
         "Root word must not be a mere generic term (e.g. only 'Cafe')",
@@ -182,7 +203,7 @@ function respond(q: string, stageId: string, stages: Stage[]): Msg {
       id,
       role: "agent",
       agent: "BIR Tax Advisor",
-      text: "Yes — your ₱150,000 capital is well under the ₱3,000,000 BMBE ceiling under RA 9178. File the BMBE application with the Manila Treasurer after your Mayor's Permit for a 100% income tax exemption plus exemption from the minimum wage law (SSS/PhilHealth still apply).",
+      text: "Businesses with total assets under ₱3,000,000 can register as a Barangay Micro Business Enterprise (BMBE) under RA 9178, at a Negosyo Center. Registered BMBEs are exempt from income tax on their business income. Confirm eligibility with the Negosyo Center.",
     };
   }
   const stage = stages.find((s) => s.id === stageId) ?? stages[0];
@@ -225,7 +246,7 @@ export function ChatPanel({
       ...transcript.map((m, i) => ({
         id: `history-${i}`,
         role: (m.role === "user" ? "user" : "agent") as Msg["role"],
-        agent: m.role === "user" ? undefined : "Compliance Copilot",
+        agent: m.role === "user" ? undefined : ASSISTANT_NAME,
         text: m.content,
       })),
     ]);
@@ -293,7 +314,7 @@ export function ChatPanel({
         {
           id: crypto.randomUUID(),
           role: "agent",
-          agent: res.agent ?? "Compliance Copilot",
+          agent: res.agent ?? ASSISTANT_NAME,
           text: res.response,
           checklist: res.verification?.length
             ? res.verification
@@ -338,11 +359,9 @@ export function ChatPanel({
     <div className="flex h-full flex-col bg-surface">
       <div className="border-b border-border bg-card px-5 pb-4 pt-5">
         <div className="flex items-start gap-3">
-          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-primary">
-            <SunMark className="size-7" />
-          </span>
+          <GabAIAvatar className="size-12" />
           <div className="min-w-0 flex-1 pt-0.5">
-            <p className="truncate font-display text-xl font-bold leading-tight">Compliance Copilot</p>
+            <p className="truncate font-display text-xl font-bold leading-tight">{ASSISTANT_NAME}</p>
             <p className="truncate text-sm text-muted-foreground">
               Stage {stage.index} · {stage.agency}
             </p>
@@ -351,7 +370,7 @@ export function ChatPanel({
             <button
               type="button"
               onClick={onHide}
-              aria-label="Close copilot"
+              aria-label={`Close ${ASSISTANT_NAME}`}
               className="grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-surface hover:text-foreground"
             >
               <X className="size-5" />
@@ -388,12 +407,7 @@ export function ChatPanel({
             </div>
           ) : (
             <div key={m.id} className="flex gap-3">
-              <span
-                className="mt-1 grid size-7 shrink-0 place-items-center rounded-full bg-primary"
-                title={m.agent}
-              >
-                <SunMark className="size-4.5" />
-              </span>
+              <GabAIAvatar className="mt-1 size-8" />
               <div className="min-w-0 flex-1 space-y-2">
                 {m.upload ? (
                   <UploadCheck
@@ -450,9 +464,7 @@ export function ChatPanel({
 
         {(thinking || uploading) && (
           <div className="flex gap-3">
-            <span className="mt-1 grid size-7 shrink-0 place-items-center rounded-full bg-primary">
-              <SunMark className="size-4.5" />
-            </span>
+            <GabAIAvatar className="mt-1 size-8" />
             <div className="min-w-0 flex-1">
               {liveTrace.length > 0 ? (
                 <AgentTrace events={liveTrace} live />
@@ -494,7 +506,7 @@ export function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about permits, fees, requirements…"
-            aria-label="Message the copilot"
+            aria-label={`Message ${ASSISTANT_NAME}`}
             className="h-10 min-w-0 flex-1 bg-transparent text-base placeholder:text-muted-foreground focus:outline-none"
           />
           <button

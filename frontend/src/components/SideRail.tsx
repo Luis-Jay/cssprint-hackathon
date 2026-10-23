@@ -40,7 +40,7 @@ export function SideRail({
           : "px-6 py-6 lg:w-[31%] lg:max-w-md lg:px-14 lg:py-14",
       )}
     >
-      <Logo badge={false} textClassName={cn("text-primary-foreground", compact && "text-base")} />
+      <Logo textClassName={cn("text-primary-foreground", compact && "text-lg")} markClassName={compact ? "h-7" : undefined} />
 
       <ol
         className={cn(

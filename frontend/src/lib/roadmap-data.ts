@@ -8,6 +8,13 @@ export type SubStep = {
   detail?: string;
 };
 
+/** How a stage is filed: "both" lists the online route first. */
+export type Filing = {
+  mode: "online" | "in_person" | "both" | "check";
+  note: string;
+  links: { label: string; url: string }[];
+};
+
 export type Stage = {
   id: string;
   index: number;
@@ -18,6 +25,9 @@ export type Stage = {
   subSteps: SubStep[];
   uploadLabel: string;
   chips: string[];
+  /** The document(s) the office issues when the stage is done; uploading them completes it. */
+  outputs?: string[];
+  filing?: Filing;
 };
 
 export type Fee = { short: string; label: string; amount: string; note: string };
@@ -50,22 +60,46 @@ export function stageKind(stage: Stage): StageKind {
   return "other";
 }
 
+/**
+ * Which local clearances a line-bureau stage covers. Model roadmaps often
+ * split them over two stages, which used to be labelled "Line bureaus" twice.
+ */
+function bureauParts(stage: Stage): string[] {
+  const title = stage.title.toLowerCase();
+  const parts = [];
+  if (/zoning|locational|occupancy/.test(title)) parts.push("Zoning");
+  if (/sanitary|health/.test(title)) parts.push("Health");
+  if (/fire|bfp/.test(title)) parts.push("Fire");
+  return parts.length && parts.length < 3 ? parts : [];
+}
+
 export function stageShortLabel(stage: Stage): string {
+  const parts = stageKind(stage) === "bureaus" ? bureauParts(stage) : [];
+  if (parts.length) return parts.join(" & ");
   const short = STAGE_COPY[stageKind(stage)].short;
   if (short) return short;
   return stage.title.length > 18 ? `${stage.title.slice(0, 16)}…` : stage.title;
 }
 
 export function stageHeading(stage: Stage): string {
+  const parts = stageKind(stage) === "bureaus" ? bureauParts(stage) : [];
+  if (parts.length) {
+    return `Get your ${parts.join(" and ").toLowerCase()} clearance${parts.length > 1 ? "s" : ""}`;
+  }
   return STAGE_COPY[stageKind(stage)].heading || stage.title;
 }
 
 /** What the finished stage is called on the permit summary */
 export function stageRecordTitle(stage: Stage): string {
+  const parts = stageKind(stage) === "bureaus" ? bureauParts(stage) : [];
+  if (parts.length) {
+    const text = `${parts.join(" and ")} clearance${parts.length > 1 ? "s" : ""}`;
+    return text[0] + text.slice(1).toLowerCase();
+  }
   return STAGE_COPY[stageKind(stage)].record || stage.title;
 }
 
-/** Negosyo Copilot covers exactly one LGU */
+/** Sellyo covers exactly one LGU */
 export const LGU = "City of Manila";
 
 /** Source of truth lives in src/data/stages.json */

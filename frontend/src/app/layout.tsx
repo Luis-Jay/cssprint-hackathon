@@ -17,7 +17,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Negosyo Copilot - Open your Manila business",
+  title: "Sellyo - Open your Manila business",
   description:
     "Answer four short questions and get a personal, step-by-step permit roadmap for your City of Manila business.",
 };

@@ -22,7 +22,8 @@ import {
   useCompliance,
   type BusinessProfile,
 } from "@/lib/compliance-store";
-import { FEE_TOTAL, stageKind, stageRecordTitle, type Stage } from "@/lib/roadmap-data";
+import { stageKind, stageRecordTitle, type Stage } from "@/lib/roadmap-data";
+import { feeEstimate } from "@/lib/fees";
 import { uploadedFileUrl } from "@/lib/use-document-upload";
 
 /** BMBE (RA 9178) covers businesses with assets under ₱3M. */
@@ -143,8 +144,9 @@ function FeesPaid() {
 
 export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) {
   const router = useRouter();
-  const { profile, stages, completedAt, uploads, feesPaid, restartOnboarding, setProfile } =
+  const { profile, stages, completedAt, uploads, feesPaid, restartOnboarding, setProfile, roadmap } =
     useCompliance();
+  const estimate = feeEstimate(roadmap, stages).total;
   const [confirmRestart, setConfirmRestart] = useState(false);
 
   const capital = Number(String(profile.capital).replace(/[^\d.]/g, ""));
@@ -156,8 +158,8 @@ export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) 
     const text = [
       `${name}: all ${stages.length} permit stages complete.`,
       ...stages.map((s) => `✓ ${stageRecordTitle(s)}`),
-      feesPaid ? `Total fees paid: ${formatPeso(feesPaid)}` : `Estimated fees: ${FEE_TOTAL}`,
-      "Made with Negosyo Copilot. Not an official government document.",
+      feesPaid ? `Total fees paid: ${formatPeso(feesPaid)}` : `Estimated fees: ${estimate}`,
+      "Made with Sellyo. Not an official government document.",
     ].join("\n");
     try {
       if (navigator.share) {
@@ -222,7 +224,16 @@ export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) 
                         <Check className="size-4 text-primary-foreground" strokeWidth={3} />
                       </span>
                       <div className="min-w-0">
-                        <p className="font-semibold">{stageRecordTitle(s)}</p>
+                        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 font-semibold">
+                          {stageRecordTitle(s)}
+                          <span className={
+                            file
+                              ? "rounded-full bg-sage-soft px-2 py-0.5 text-[11px] font-semibold text-primary"
+                              : "rounded-full bg-surface px-2 py-0.5 text-[11px] font-semibold text-muted-foreground"
+                          }>
+                            {file ? "Document checked" : "Marked done by you"}
+                          </span>
+                        </p>
                         <p className="text-sm text-muted-foreground">{permitDetail(s, profile)}</p>
                         {file && (
                           url ? (
@@ -250,6 +261,11 @@ export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) 
             })}
           </tbody>
         </table>
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          <span className="font-semibold">Document checked</span>: you uploaded the issued document
+          and it looked right to Sellyo&apos;s check, which can&apos;t confirm a document is genuine.{" "}
+          <span className="font-semibold">Marked done by you</span>: no document was uploaded.
+        </p>
 
         <div className="mt-8 grid items-start gap-8 border-t border-border pt-8 md:grid-cols-2 print:mt-4 print:grid-cols-2 print:break-inside-avoid print:pt-5">
           <section className="rounded-2xl border-2 border-foreground/70 p-6">
@@ -257,7 +273,7 @@ export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) 
               Total fees paid
             </p>
             <FeesPaid />
-            <p className="mt-2 text-sm text-muted-foreground">Original estimate {FEE_TOTAL}</p>
+            <p className="mt-2 text-sm text-muted-foreground">Original estimate {estimate}</p>
             {bmbe && (
               <p className="mt-4 inline-block rounded-full bg-gold-soft px-4 py-1.5 text-sm font-semibold text-gold-foreground">
                 BMBE eligible · capital under ₱3M
@@ -281,7 +297,7 @@ export function PermitSummary({ onViewRoadmap }: { onViewRoadmap: () => void }) 
         </div>
 
         <footer className="mt-10 border-t border-border pt-4 text-sm text-muted-foreground print:mt-6">
-          Printed from Negosyo Copilot · Not an official government document
+          Printed from Sellyo · Not an official government document
         </footer>
       </article>
 

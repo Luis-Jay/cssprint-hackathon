@@ -98,3 +98,6 @@ backend/.easyocr/
 
 # Kept locally, not published
 Accenture X DLSU - Capstone One Slider.pptx.pdf
+
+# Regenerated on every eval run
+backend/eval/last_results.json

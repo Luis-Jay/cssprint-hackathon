@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { ArrowUpRight, Check, CheckCircle2, Loader2, Lock } from "lucide-react";
-import { stageHeading, type Stage } from "@/lib/roadmap-data";
+import { ArrowUpRight, Building2, Check, CheckCircle2, Globe, Loader2, Lock } from "lucide-react";
+import { stageHeading, type Filing, type Stage } from "@/lib/roadmap-data";
 import { useCompliance } from "@/lib/compliance-store";
 import { UPLOAD_ACCEPT, useDocumentUpload } from "@/lib/use-document-upload";
 import { cn } from "@/lib/utils";
@@ -16,8 +16,43 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
+const FILING_LABEL: Record<Filing["mode"], string> = {
+  online: "Online",
+  in_person: "In person",
+  both: "Online or in person",
+  check: "Check with the office",
+};
+
+/** How this stage is filed, with the official site when there is one. */
+function FilingInfo({ filing }: { filing: Filing }) {
+  const Icon = filing.mode === "in_person" ? Building2 : Globe;
+  return (
+    <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-surface px-5 py-4">
+      <span className={cn(
+        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold",
+        filing.mode === "in_person" ? "bg-gold-soft text-gold-foreground" : "bg-sage-soft text-primary",
+      )}>
+        <Icon className="size-4" /> {FILING_LABEL[filing.mode]}
+      </span>
+      <span className="text-sm text-muted-foreground">{filing.note}</span>
+      {filing.links.map((link) => (
+        <a
+          key={link.url}
+          href={link.url}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+        >
+          {link.label} <ArrowUpRight className="size-4" />
+        </a>
+      ))}
+    </div>
+  );
+}
+
 function UploadZone({ stage, isLast }: { stage: Stage; isLast: boolean }) {
   const [drag, setDrag] = useState(false);
+  const { profile } = useCompliance();
   const { upload: handle, busy, fileName } = useDocumentUpload(stage);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +74,11 @@ function UploadZone({ stage, isLast }: { stage: Stage; isLast: boolean }) {
       )}
     >
       <p className="font-semibold">
-        {isLast ? "Upload your certificate to finish" : `Upload your certificate to unlock Stage ${stage.index + 1}`}
+        Upload your {stage.outputs?.join(" and ") ?? "certificate"}{" "}
+        {isLast ? "to finish" : `to unlock Stage ${stage.index + 1}`}
+      </p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        A photo or PDF of the document the office gave you.
       </p>
       <input
         ref={inputRef}
@@ -67,6 +106,13 @@ function UploadZone({ stage, isLast }: { stage: Stage; isLast: boolean }) {
           </span>
         )}
       </div>
+      {/* Say plainly what the check is, and where the file goes */}
+      <p className="mt-4 border-t border-input pt-3 text-xs leading-relaxed text-muted-foreground">
+        Sellyo checks that this looks like the right document
+        {profile.businessName ? ` for ${profile.businessName}` : ""}. It can&apos;t confirm a
+        document is genuine, and it doesn&apos;t submit anything to the government. Your file is
+        read by Google Gemini to do the check, so upload only your own documents.
+      </p>
     </div>
   );
 }
@@ -92,8 +138,14 @@ export function StageCard({ stage }: { stage: Stage }) {
       </p>
       <h2 className="mt-2 text-3xl font-extrabold sm:text-4xl">{stageHeading(stage)}</h2>
       <p className="mt-3 text-lg text-muted-foreground">{stage.summary}</p>
+      {stage.filing && <FilingInfo filing={stage.filing} />}
 
-      <ol className="mt-7 divide-y divide-border border-y border-border">
+      {stage.subSteps.length > 0 && (
+        <p className="mt-7 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          What you&apos;ll need to apply
+        </p>
+      )}
+      <ol className="mt-2 divide-y divide-border border-y border-border">
         {stage.subSteps.map((s, idx) => {
           const checked = done || isSubStepChecked(s.id);
           return (
@@ -123,7 +175,7 @@ export function StageCard({ stage }: { stage: Stage }) {
         })}
       </ol>
 
-      {stage.agencyUrl && (
+      {stage.agencyUrl && !stage.filing && (
         <a
           href={`https://${stage.agencyUrl}`}
           target="_blank"

@@ -25,6 +25,8 @@ from agents.workflow import app as workflow_app
 from agents.state import AgentState
 from agents.roadmap_agent import generate_roadmap, get_fallback_roadmap
 from agents.inspection_agent import verdict_is_pass
+from agents.stage_documents import annotate_roadmap
+from utils.llm_client import get_settings
 from agents.profiling_agent import _next_question
 from utils.document_text import as_attachment, extract_text
 from rag.retriever import get_retriever
@@ -122,6 +124,16 @@ async def upload_document(
         if state is None:
             raise HTTPException(status_code=404, detail="Session not found")
 
+        # A typed text file can claim to be any certificate, so only scans,
+        # photos and PDFs are checked - unless text is allowed for demos/tests.
+        is_text = (file.content_type or "").startswith("text/") or \
+            (file.filename or "").lower().endswith(".txt")
+        if is_text and not get_settings().allow_text_uploads:
+            raise HTTPException(
+                status_code=415,
+                detail="Upload a PDF or a photo of the document. Text files can't be checked.",
+            )
+
         # Read file content
         content = await file.read()
 
@@ -189,7 +201,9 @@ async def upload_document(
                 "unreadable": sum(1 for v in verification if v.get("status") == "unreadable"),
                 # Whether the stage may be marked done. The client used to
                 # complete the stage no matter what came back.
-                "passed": verdict_is_pass(verification),
+                "passed": bool(result.get("stage_passed"))
+                if result.get("stage_passed") is not None
+                else verdict_is_pass(verification),
                 "extracted": method,
             } if verification else None,
             agent=result.get("responding_agent"),
@@ -226,7 +240,7 @@ async def create_roadmap(request: RoadmapCreateRequest):
     if state.get("roadmap"):
         return RoadmapResponse(
             session_id=request.session_id,
-            roadmap=state["roadmap"],
+            roadmap=annotate_roadmap(state["roadmap"]),
             profile=state["user_profile"],
             stage=state["current_stage"],
             source=state.get("roadmap_source"),
@@ -251,7 +265,7 @@ async def create_roadmap(request: RoadmapCreateRequest):
 
     return RoadmapResponse(
         session_id=request.session_id,
-        roadmap=roadmap,
+        roadmap=annotate_roadmap(roadmap),
         profile=profile,
         stage=state["current_stage"],
         source=source,
@@ -272,7 +286,7 @@ async def get_roadmap(session_id: str):
 
         return RoadmapResponse(
             session_id=session_id,
-            roadmap=state["roadmap"],
+            roadmap=annotate_roadmap(state["roadmap"]),
             profile=state["user_profile"],
             stage=state["current_stage"],
             source=state.get("roadmap_source"),
@@ -302,7 +316,7 @@ async def create_session():
         session_id=session_id,
         stage=state["current_stage"],
         profile=state["user_profile"],
-        roadmap=state["roadmap"],
+        roadmap=annotate_roadmap(state["roadmap"]),
         documents=state["documents"],
         message_count=len(state["messages"]),
         messages=state["messages"],
@@ -325,7 +339,7 @@ async def get_session(session_id: str):
             session_id=session_id,
             stage=state["current_stage"],
             profile=state["user_profile"],
-            roadmap=state["roadmap"],
+            roadmap=annotate_roadmap(state["roadmap"]),
             documents=state["documents"],
             message_count=len(state["messages"]),
             # The transcript itself, so the chat panel can be redrawn after a
@@ -365,7 +379,7 @@ async def save_progress(session_id: str, request: ProgressRequest):
         session_id=session_id,
         stage=state["current_stage"],
         profile=state["user_profile"],
-        roadmap=state["roadmap"],
+        roadmap=annotate_roadmap(state["roadmap"]),
         documents=state["documents"],
         message_count=len(state["messages"]),
         messages=state["messages"],

@@ -36,6 +36,10 @@ class Settings(BaseSettings):
     # recorded in the index's meta.json. Changing this needs a reindex.
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "intfloat/multilingual-e5-small")
 
+    # Accept .txt uploads for document checks. Off by default: typed text can
+    # claim to be any certificate. Turn on for demos and the document eval.
+    allow_text_uploads: bool = os.getenv("ALLOW_TEXT_UPLOADS", "false").lower() == "true"
+
     # Model Parameters (ZERO HALLUCINATION MODE)
     max_tokens: int = int(os.getenv("MAX_TOKENS", "2048"))
     temperature: float = float(os.getenv("TEMPERATURE", "0.0"))

@@ -11,7 +11,7 @@ class AgentState(TypedDict):
     State passed between agents in the workflow
 
     This represents all the information collected and processed
-    during a user's journey through the PermitPal system.
+    during a user's journey through Sellyo.
     """
 
     # Conversation history
@@ -39,6 +39,13 @@ class AgentState(TypedDict):
     # The single upload being verified this turn. `documents` remains the
     # session history and must never be used as evidence for a later upload.
     pending_document: Optional[Dict[str, any]]
+
+    # Per stage (keyed by step number): which documents uploads have matched so
+    # far, so a stage's documents can arrive across several uploads
+    stage_evidence: Dict[str, Dict[str, any]]
+
+    # Whether the latest upload completed its stage
+    stage_passed: Optional[bool]
 
     # Natural-language reply for the user, produced by whichever agent ran
     assistant_reply: Optional[str]
@@ -77,6 +84,8 @@ def get_initial_state() -> AgentState:
         pending_inspection=False,
         pending_step=None,
         pending_document=None,
+        stage_evidence={},
+        stage_passed=None,
         assistant_reply=None,
         responding_agent=None,
         current_stage="profiling",

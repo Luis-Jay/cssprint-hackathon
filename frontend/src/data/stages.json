@@ -1,5 +1,5 @@
 {
-  "$comment": "EDIT ME — single source of truth for the 5-stage Manila MSME compliance roadmap. Each stage: id, index, title, agency, agencyUrl, summary, subSteps[], uploadLabel, chips[].",
+  "$comment": "EDIT ME — single source of truth for the 5-stage Manila MSME compliance roadmap. Each stage: id, index, title, agency, agencyUrl, summary, subSteps[], uploadLabel, chips[], outputs[] (the document that completes the stage), filing (online / in person).",
   "stages": [
     {
       "id": "dti",
@@ -25,12 +25,25 @@
           "detail": "Valid 5 years, renewable"
         }
       ],
-      "uploadLabel": "DTI_Certificate.pdf",
+      "uploadLabel": "DTI Certificate of Business Name Registration",
       "chips": [
-        "What are the exact DTI name rules for my café?",
+        "What are DTI's business name rules?",
         "Which territorial scope should I pick?",
-        "How long does BNRS approval take?"
-      ]
+        "Can I register my business name online?"
+      ],
+      "outputs": [
+        "DTI Certificate of Business Name Registration"
+      ],
+      "filing": {
+        "mode": "both",
+        "note": "Register online in about 30 minutes, or at a DTI office or Negosyo Center.",
+        "links": [
+          {
+            "label": "bnrs.dti.gov.ph",
+            "url": "https://bnrs.dti.gov.ph"
+          }
+        ]
+      }
     },
     {
       "id": "barangay",
@@ -39,7 +52,11 @@
       "agency": "Local Barangay Hall (Sampaloc Zone 30)",
       "summary": "Your barangay endorses the business location before the City of Manila will assess it.",
       "subSteps": [
-        { "id": "brgy-1", "label": "Submit DTI Certificate", "detail": "Photocopy + original for viewing" },
+        {
+          "id": "brgy-1",
+          "label": "Submit DTI Certificate",
+          "detail": "Photocopy + original for viewing"
+        },
         {
           "id": "brgy-2",
           "label": "Notarized Lease Contract + RPT Receipt",
@@ -51,12 +68,20 @@
           "detail": "Any PhilSys / UMID / Passport"
         }
       ],
-      "uploadLabel": "Barangay_Clearance.pdf",
+      "uploadLabel": "Barangay Business Clearance",
       "chips": [
-        "Draft my Lease Contract requirements checklist.",
-        "What if my café is home-based?",
-        "How much is Barangay clearance in Sampaloc?"
-      ]
+        "What do I need for a barangay clearance?",
+        "What if my business is home-based?",
+        "How much is a barangay clearance?"
+      ],
+      "outputs": [
+        "Barangay Business Clearance"
+      ],
+      "filing": {
+        "mode": "in_person",
+        "note": "Apply at the barangay hall that covers your business address.",
+        "links": []
+      }
     },
     {
       "id": "clearances",
@@ -81,32 +106,68 @@
           "detail": "BFP — dry chemical fire extinguisher on site required"
         }
       ],
-      "uploadLabel": "Zoning_Sanitary_FSIC_Bundle.pdf",
+      "uploadLabel": "Zoning Clearance and Sanitary Permit and Fire Safety Inspection Certificate (FSIC)",
       "chips": [
-        "How do my employees get the Manila Yellow Health Card?",
-        "What does BFP inspect in a small café?",
-        "Is Sampaloc Zone 30 zoned for commercial food service?"
-      ]
+        "How do my staff get health cards?",
+        "What does the BFP inspect?",
+        "Is my location zoned for my business?"
+      ],
+      "outputs": [
+        "Zoning Clearance",
+        "Sanitary Permit",
+        "Fire Safety Inspection Certificate (FSIC)"
+      ],
+      "filing": {
+        "mode": "in_person",
+        "note": "Ask the Bureau of Permits at Manila City Hall where each clearance is processed.",
+        "links": []
+      }
     },
     {
       "id": "mayor",
       "index": 4,
       "title": "GO! Manila Mayor's Business Permit",
       "agency": "BPLS Manila",
-      "agencyUrl": "gomanila.com",
+      "agencyUrl": "bpls.gomanila.com",
       "summary": "Consolidated online assessment and payment of your Local Business Tax and regulatory fees.",
       "subSteps": [
-        { "id": "my-1", "label": "Register on GO! Manila Portal", "detail": "E-GOVERNMENT > BPLS module" },
-        { "id": "my-2", "label": "Upload Clearances & Generate Statement of Account (SOA)" },
-        { "id": "my-3", "label": "Pay Local Business Tax (LBT) & Regulatory Fees online" },
-        { "id": "my-4", "label": "Download E-Permit & Claim Business Plate" }
+        {
+          "id": "my-1",
+          "label": "Register on GO! Manila Portal",
+          "detail": "E-GOVERNMENT > BPLS module"
+        },
+        {
+          "id": "my-2",
+          "label": "Upload Clearances & Generate Statement of Account (SOA)"
+        },
+        {
+          "id": "my-3",
+          "label": "Pay Local Business Tax (LBT) & Regulatory Fees online"
+        },
+        {
+          "id": "my-4",
+          "label": "Download E-Permit & Claim Business Plate"
+        }
       ],
-      "uploadLabel": "Manila_Mayors_Permit.pdf",
+      "uploadLabel": "Mayor's Permit (Business Permit)",
       "chips": [
-        "Calculate my total estimated LGU & BIR government fees.",
-        "How is Manila LBT computed for a new café?",
+        "Can I apply for my mayor's permit online?",
+        "How is Manila's business tax computed?",
         "Where do I claim my business plate?"
-      ]
+      ],
+      "outputs": [
+        "Mayor's Permit (Business Permit)"
+      ],
+      "filing": {
+        "mode": "both",
+        "note": "Apply through GO! Manila, or at the Bureau of Permits in Manila City Hall.",
+        "links": [
+          {
+            "label": "bpls.gomanila.com",
+            "url": "https://bpls.gomanila.com"
+          }
+        ]
+      }
     },
     {
       "id": "bir",
@@ -116,7 +177,10 @@
       "agencyUrl": "orus.bir.gov.ph",
       "summary": "Final national step: your Certificate of Registration, invoices and books of accounts.",
       "subSteps": [
-        { "id": "bir-1", "label": "Submit BIR Form 1901 via ORUS" },
+        {
+          "id": "bir-1",
+          "label": "Submit BIR Form 1901 via ORUS"
+        },
         {
           "id": "bir-2",
           "label": "Secure Authority to Print (Form 1906) for Sales Invoices",
@@ -127,14 +191,30 @@
           "label": "Stamp 4 Books of Accounts",
           "detail": "Journal, Ledger, Cash Receipts, Cash Disbursements"
         },
-        { "id": "bir-4", "label": "Receive BIR Form 2303 (COR) & \"Ask for Receipt\" Poster" }
+        {
+          "id": "bir-4",
+          "label": "Receive BIR Form 2303 (COR) & \"Ask for Receipt\" Poster"
+        }
       ],
-      "uploadLabel": "BIR_Form_2303.pdf",
+      "uploadLabel": "BIR Certificate of Registration (Form 2303)",
       "chips": [
-        "Do I qualify for BMBE income tax exemption?",
-        "8% flat tax or graduated rates for my café?",
-        "What goes into my 4 books of accounts?"
-      ]
+        "Do I qualify for the BMBE income tax exemption?",
+        "8% flat tax or graduated rates?",
+        "Can I register with the BIR online?"
+      ],
+      "outputs": [
+        "BIR Certificate of Registration (Form 2303)"
+      ],
+      "filing": {
+        "mode": "both",
+        "note": "Register online through ORUS, or at the Revenue District Office for your address.",
+        "links": [
+          {
+            "label": "orus.bir.gov.ph",
+            "url": "https://orus.bir.gov.ph"
+          }
+        ]
+      }
     }
   ]
 }
